@@ -1,0 +1,13 @@
+{
+  "request": "/signUp",
+  "body": //json-serialized object
+  {
+    "Username": "Jhon",
+    "ServerCert": "12345",
+    "AesKey": {
+      "Key": "f2345",
+      "IV": "1111"
+    }
+  },
+  "method": "POST"
+}

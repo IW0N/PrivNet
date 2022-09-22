@@ -1,0 +1,8 @@
+{
+  "SocketPort": 8123,
+  "DataTypes": {
+    "text": 0,
+    "bytes": 1
+  },
+  "UsersPlace": "C:\\Users\\Admin\\Documents\\PrivNet\\Users"
+}
