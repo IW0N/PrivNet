@@ -13,5 +13,14 @@ namespace Common.Extensions
         public static byte[] FromBase64(this string? base64)=>
             !string.IsNullOrEmpty(base64)?Convert.FromBase64String(base64):null;
         public static T ChangeType<T>(this object val) => (T)Convert.ChangeType(val, typeof(T));
+        public static void CopyToWithOffset(this byte[] mainArr, byte[] arr,int offset)
+        {
+           
+            for (int i=0;i<mainArr.Length;i++)
+            {
+                arr[i+offset] = mainArr[i];
+            }
+            
+        }
     }
 }

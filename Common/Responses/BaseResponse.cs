@@ -6,20 +6,14 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Common.Extensions;
+using Common.Requests;
+
 namespace Common.Responses
 {
-    public class BaseResponse
+    public class BaseResponse:WebCipher
     {
         public string NextAlias { get; init; }
-        public string NextServerCert { get; init; }
         public byte[] NextIV { get; init; }
-        public byte[] Encrypt(AesKey key)
-        {
-            using Aes aes = Aes.Create();
-            aes.ImportKey(key);
-            string serialized = JsonConvert.SerializeObject(this);
-            byte[] bytes = Encoding.ASCII.GetBytes(serialized);
-            return aes.EncryptEcb(bytes, PaddingMode.PKCS7);
-        }
+        
     }
 }

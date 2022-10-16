@@ -7,7 +7,7 @@ namespace Common.Responses
     public class SignUpResponse : BaseResponse
     {
         public AesKey CipherKey { get; init; }
-        public string OldServerCert { get; init; }
+       // public string OldServerCert { get; init; }
         
 
     }

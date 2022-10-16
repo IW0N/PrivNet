@@ -2,8 +2,8 @@
 {
     public enum ChatType
     {
+        Dialog,
         Private,
-        ProtectedGroup,
         Public
     }
 }
