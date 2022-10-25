@@ -8,6 +8,6 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
 {
     abstract class Plugin
     {
-        protected static readonly HttpClient client = new();
+        protected static readonly HttpClient client = new() { Timeout=new TimeSpan(0,20,0)};
     }
 }

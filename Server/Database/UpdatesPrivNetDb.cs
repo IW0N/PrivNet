@@ -1,13 +1,19 @@
 ﻿using Common.Responses.UpdateSpace;
 using Common.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Newtonsoft.Json;
 using Server.Database.Base;
 using Server.Database.Updates;
+using Server.Database.Updates.Environment;
+using System.Linq.Expressions;
+
 namespace Server.Database
 {
     //updates part
     public partial class PrivNetDb
     {
+        public DbSet<DbUpdate> GlobalUpdates => Set<DbUpdate>();
         public DbSet<DbChatInvite> ChatInvites => Set<DbChatInvite>();
         public DbSet<DbChatBan> Bans => Set<DbChatBan>();
         public DbSet<DbFriendInvite> FriendInvites => Set<DbFriendInvite>();
@@ -16,11 +22,26 @@ namespace Server.Database
         {
             modelBuilder.Entity<DbChatInvite>().HasKey(ci => ci.InviteLink);
             modelBuilder.Entity<DbFriendInvite>().HasKey(fi => fi.InviteLink);
+            modelBuilder.Entity<DbUpdate>().HasKey(upd => upd.Id);
         }
         void SetUpdateCompositeKeys(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DbChatBan>().HasKey(cb => new { cb.ChatId, cb.SenderId, cb.AddresseeId });
-            modelBuilder.Entity<DbFriendDeletion>().HasKey(fd => new { fd.SenderId, fd.AddresseeId });
+            modelBuilder.Entity<DbChatBan>().HasKey(cb => new { cb.ChatId, cb.SenderId, cb.UpdateId });
+            modelBuilder.Entity<DbFriendDeletion>().HasKey(fd => new { fd.SenderId, fd.UpdateId });
+        }
+        public override EntityEntry<TEntity> Add<TEntity>(TEntity entity)
+        {
+            if (entity is BaseUpdateElement||entity is IDbUpdateElement)
+            {
+                string errorMesssage = $"Update element must realize {nameof(IDbUpdateElement)} interface and be child of {nameof(BaseUpdateElement)} class!";
+
+                if (entity is IDbUpdateElement && entity is BaseUpdateElement)
+                    return base.Add(entity);
+                else
+                    throw new ArgumentException(errorMesssage);
+            }
+            else
+                return base.Add(entity);
         }
         void SetUpdateKeys(ModelBuilder modelBuilder)
         {
@@ -30,56 +51,44 @@ namespace Server.Database
         }
         void SetUpdateForeignKeys(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DbChatBan>().
-                HasOne(cb =>cb.Addressee).
-                WithMany(user=>user.Bans);
+          
+            modelBuilder.Entity<User>().
+                HasOne(user => user.Update).
+                WithOne(upd => upd.Owner);
 
-            modelBuilder.Entity<DbChatInvite>().
-                HasOne(ci => ci.Addressee).
-                WithMany(user => user.ChatInvites);
-
-            modelBuilder.Entity<DbFriendInvite>().
-                HasOne(fi => fi.Addressee).
-                WithMany(user=>user.FriendRequests);
-
-            modelBuilder.Entity<DbFriendDeletion>().
-                HasOne(fd => fd.Addressee).
-                WithMany(user => user.FriendDeletions);
-        }
-        static List<T> ConvertToParentList<T,T1>(List<T1> arr) where T1:T where T:class
-        {
-            List<T> arr1 = new();
-            foreach (T1 val in arr)
-                arr1.Add(val);
+            var updEntity = modelBuilder.Entity<DbUpdate>();
             
-            return arr1;
+            updEntity.
+                HasMany(upd=>upd.Bans).
+                WithOne(ban=>ban.Update);
+
+            updEntity.
+                HasMany(upd=>upd.ChatInvites).
+                WithOne(ci=>ci.Update);
+
+            updEntity.
+                HasMany(upd=>upd.FriendInvites).
+                WithOne(fi=>fi.Update);
+
+            updEntity.
+                HasMany(upd=>upd.FriendDeletions).
+                WithOne(fd=>fd.Update);
         }
-        Update BuildUpdate(User user,List<DbFriendInvite> newFriends,List<DbChatInvite> chatInvites,List<DbFriendDeletion> friendDels, List<DbChatBan> bans)
-        {
-            var gen = new TokenGenerator();
-            user.CipherKey.UpdateIV();
-            string nextAlias = gen.GenerateToken();
-            user.Alias = new Base.Aliases.UserAlias(nextAlias,user);
-            return new Update()
-            {
-                Bans = ConvertToParentList<ChatBan, DbChatBan>(bans),
-                ChatInvites = ConvertToParentList<ChatInvite, DbChatInvite>(chatInvites),
-                FriendDeletions = ConvertToParentList<FriendDeletion, DbFriendDeletion>(friendDels),
-                FriendInvites = ConvertToParentList<FriendInvite, DbFriendInvite>(newFriends),
-                NextAlias = nextAlias,
-                NextIV = user.CipherKey.IV
-            };
-        }
+        
+       
         public Update BuildUpdateFor(User user)
         {
-            
-            var newFriends=user.FriendRequests;
-            var friendDels = user.FriendDeletions;
-            var chatInvites = user.ChatInvites;
-            var bans = user.Bans;
-            var upd=BuildUpdate(user, newFriends, chatInvites, friendDels, bans);
+            Expression<Func<DbUpdate, bool>> expression = upd => upd.OwnerId == user.Id;
+            var upds= GlobalUpdates.
+                Include(upd => upd.Owner).
+                Include(upd => upd.Bans).
+                Include(upd=>upd.ChatInvites).
+                Include(upd=>upd.FriendDeletions).
+                Include(upd=>upd.FriendInvites);
+            var upd=upds.First(expression);
+            var webUpdate=upd.ConvertToUpdate();
             SaveChanges();
-            return upd;
+            return webUpdate;
         }
     }
 }

@@ -1,12 +1,16 @@
 ﻿using Common.Responses.UpdateSpace;
+using Newtonsoft.Json;
 using Server.Database.Base;
 using Server.Database.Updates.Environment;
 
 namespace Server.Database.Updates
 {
-    public class DbChatBan:ChatBan,IDbUpdate
+    public class DbChatBan:ChatBan,IDbUpdateElement
     {
-        public long AddresseeId { get; init; }
-        public User Addressee { get; init; }
+        [JsonIgnore]
+        public long BannedUserId { get; init; }
+        public DbUpdate Update { get; init; }
+        public string UpdateId { get; init; }
+        public void NotifyUsers() { }
     }
 }

@@ -4,10 +4,13 @@ using Server.Database.Updates.Environment;
 
 namespace Server.Database.Updates
 {
-    public class DbFriendInvite:FriendInvite,IDbUpdate
-    { 
-        public long AddresseeId { get; init; }
-        public User Addressee { get; init; }
-        
+    public class DbFriendInvite : FriendInvite, IDbUpdateElement
+    {
+        public string UpdateId { get; init; }
+        public DbUpdate Update { get; init; }
+        public void NotifyUsers()
+        {
+
+        }
     }
 }

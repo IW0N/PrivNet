@@ -19,6 +19,17 @@ namespace WebClient.Tests
             bool result = user.CipherKey != null && user.Alias != null && user.Nickname == userName;
             Assert.True(result);
         }
+        [Fact]
+        public async Task TestChatCreating()
+        {
+            LocalUser.isTest = true;
+            string initiatorName = "Alex";
+            string secondName = "Nick";
+            LocalUser initiator =LocalUser.GetUser(initiatorName);
+            //LocalUser otherUser = LocalUser.GetUser(secondName);
+            var dialog=await initiator.CreateDialog(secondName);
+            
+        }
         public async Task TestGettingUserFromLocalDb()
         {
 

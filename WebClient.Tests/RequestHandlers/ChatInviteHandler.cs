@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Responses
+namespace WebClient.Tests.RequestHandlers
 {
-    public class CreateChatResponse : BaseResponse
+    internal class ChatInviteHandler
     {
-        public string NextChatAlias { get; init; }
+        
     }
 }

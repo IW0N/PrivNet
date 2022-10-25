@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using WebClient.LocalDb;
 using WebClient.LocalDb.Entities.UserEnvironment;
 
 namespace WebClient
@@ -19,8 +20,10 @@ namespace WebClient
         public static string UpdatesDbConnectionString { get=> $"Data Source={EnvironmentPlace}\\UpdatesDb.db"; }
         public static string TestLocalDbConnectionString { get => $"Data Source={EnvironmentPlace}\\PrivNetTestDb.db"; }
         public static HttpClient WebClient { get; } = new();
+        public static PrivNetLocalDb Db { get; set; } = null;
         static ClientContext()
         {
+            
             string serialized = File.ReadAllText("client_configs.json");
             Configs = JsonConvert.DeserializeObject<ExternalConfigs>(serialized);
         }

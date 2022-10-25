@@ -8,6 +8,7 @@ namespace Common.Responses.UpdateSpace
 {
     public class FriendDeletion:BaseUpdateElement
     {
+        public long FriendId { get; init; }
         public string? Description { get; init; }
     }
 }

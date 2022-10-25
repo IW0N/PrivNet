@@ -20,7 +20,7 @@ namespace Common
             string json = Encoding.ASCII.GetString(bts);
             return JsonConvert.DeserializeObject<T>(json);
         }
-        public byte[] Encrypt(AesKey key)
+        public virtual byte[] Encrypt(AesKey key)
         {
             using Aes aes = Aes.Create();
             aes.ImportKey(key);

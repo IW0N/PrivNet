@@ -44,7 +44,7 @@ namespace Server.Database
             SetUpForeignKeys(modelBuilder);
             
             SetUpdateKeys(modelBuilder);
-
+          
             base.OnModelCreating(modelBuilder);
         }
         void ConfigureConvertions(ModelBuilder modelBuilder)
@@ -95,7 +95,7 @@ namespace Server.Database
         void SetUpForeignKeys(ModelBuilder modelBuilder)
         {
             BindWithAliases(modelBuilder);
-
+           
             modelBuilder.Entity<User>().
                 HasMany(user => user.Chats).
                 WithMany(chat => chat.Participants);
@@ -115,9 +115,12 @@ namespace Server.Database
             modelBuilder.Entity<Chat>().
                 HasMany(chat => chat.Locks).
                 WithOne(Lock => Lock.Chat);
+
             modelBuilder.Entity<Chat>().
                 HasMany(chat => chat.Roles).
                 WithOne(role => role.Chat);
+
+            modelBuilder.Entity<DbChatRole>().HasOne(role => role.User).WithMany(user => user.ChatRoles);
 
         }
     }

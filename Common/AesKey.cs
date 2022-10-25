@@ -21,11 +21,13 @@ namespace Common
             using Aes aes = Aes.Create();
             return new(aes.Key, aes.IV);
         }
-        public void UpdateIV()
+        public void UpdateIV() => IV = GetNewIV();
+            
+        public byte[] GetNewIV()
         {
             using Aes aes = Aes.Create();
             aes.GenerateIV();
-            IV = aes.IV;
+            return aes.IV;
         }
     }
 }

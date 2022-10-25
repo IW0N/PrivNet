@@ -17,5 +17,6 @@ namespace Server.Database.Base
         public DbAesKey CipherKey { get; init; }
         public string Name { get; set; }
         public List<Chat> Chats { get; } = new();
+        public ICollection<DbChatRole> ChatRoles { get; } = new List<DbChatRole>();
     }
 }

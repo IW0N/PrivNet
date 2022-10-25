@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebClientAPI\WebClient.csproj" />
+    <ProjectReference Include="..\WebClient\WebClient.csproj" />
   </ItemGroup>
 
 </Project>

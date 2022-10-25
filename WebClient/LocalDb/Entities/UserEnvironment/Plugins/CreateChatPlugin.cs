@@ -1,5 +1,4 @@
 ﻿using Common.Database.Chat;
-using Common.Responses;
 using Common;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using WebClient.LocalDb.Entities.Keys;
+using static WebClient.ClientContext;
+using Common.Responses;
 
 namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
 {
@@ -31,7 +32,6 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
             ChatParticiapnt initiator = new() { Role = ChatRole.Owner, Nickname = UserName, Chat = chat };
 
             chat.Participants.Add(initiator);
-            //db.SaveChanges();
             foreach (var companionName in companions)
             {
                 ChatParticiapnt companion = new() { Role = ChatRole.Ordinary, Nickname = companionName, Chat = chat };
@@ -55,34 +55,36 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
         public async Task<LocalChat> CreateChat(string chatName, List<string> participants, ChatType type)
         {
             using var rsa = new RSACryptoServiceProvider(2048);
-
             var request = reqBuilder.BuildNewChatRequest(chatName, type, participants, rsa);
-
-            string fullUri = ClientContext.Webroot + "/api/user/chat";
+            string fullUri = Webroot + "/api/user/chat";
             var response = await request.Send<CreateChatResponse>(client, fullUri, UserCipherKey);
-
             var rsaLock = entBuilder.BuildEntity<RSALock>(rsa);
-            using var db = new PrivNetLocalDb();
-            var user = db.Users.Find(UserName);
-            LocalChat chat = new()
+           
+            Db = new PrivNetLocalDb();
+            lock (Db)
             {
-                Alias = response.NextChatAlias,
-                CipherLock = rsaLock,
-                LocalParticipant = user,
-                LocalName = UserName,
-                Name = request.ChatName,
-                Type = type
-            };
+                var user = Db.Users.Find(UserName);
+                LocalChat chat = new()
+                {
+                    Alias = response.NextChatAlias,
+                    CipherLock = rsaLock,
+                    LocalParticipant = user,
+                    LocalName = UserName,
+                    Name = request.ChatName,
+                    Type = type
+                };
 
-            SetParticipants(chat, participants);
-            db.Chats.Add(chat);
+                SetParticipants(chat, participants);
+                Db.Chats.Add(chat);
+
+                Db.SaveChanges();
+                SetUpIds(chat);
+                Db.SaveChanges();
+                Db.Dispose();
 
 
-            db.SaveChanges();
-            SetUpIds(chat);
-            db.SaveChanges();
-
-            return chat;
+                return chat;
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Server.Database;
 using Server.Database.Base;
 using Server.Database.Base.Aliases;
+using Server.Database.Updates;
 using Server.Services;
 using System.Security.Cryptography;
 
@@ -30,16 +31,27 @@ namespace Server.RequestHandlers
             Table = user,
             TableId = user.Id
         };
+        static void SetUpUserUpdate(User user,TokenGenerator generator)
+        {
+            DbUpdate upd = user.Update;
+            upd.Id = generator.GenerateToken();
+            upd.Owner = user;
+            user.UpdateId = upd.Id;
+        }
         static void SetUpUser(User user,PrivNetDb db,DbAesKey dbAesKey)
         {
             UserAlias alias = BuildAlias(user);
             user.Alias = alias;
+            //user.Update.OwnerId = user.Id;
+
+            user.UpdateId = user.Update.Id;
+            db.GlobalUpdates.Add(user.Update);
 
             db.Users.Add(user);
             db.SaveChanges();
             user.AesKeyId = dbAesKey.Id;
             alias.TableId = user.Id;
-            // db.UserAliases.Add(alias);
+            user.Update.OwnerId = user.Id;
             db.SaveChanges();
         }
         static DbAesKey BuildAesKey(AesKey key,SignUpRequest signUpReq,PrivNetDb db)
@@ -68,6 +80,7 @@ namespace Server.RequestHandlers
             var dbAesKey = BuildAesKey(key, signUpReq, db);
             TokenGenerator generator = context.RequestServices.GetRequiredService<TokenGenerator>();
             User user = BuildUser(dbAesKey, signUpReq, generator);
+            SetUpUserUpdate(user, generator);
             SetUpUser(user, db, dbAesKey);
 
             var response = new SignUpResponse

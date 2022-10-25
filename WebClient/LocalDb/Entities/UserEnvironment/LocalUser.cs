@@ -36,13 +36,16 @@ namespace WebClient.LocalDb.Entities.UserEnvironment
             user.CipherKey = new(response.CipherKey) { OwnerId = user.Nickname, Owner = user };
             return user;
         }
-        //USE IT WITH VPN ONLY!!!!!!!!!
         public static async Task<LocalUser> SignUp(string username) => 
             await GetStaticPlugin<SignUpPlugin>().SignUp(username, BuildNewUser);
         public static LocalUser GetUser(string nickname) => 
             GetStaticPlugin<GetUserPlugin>().GetUser(nickname);
         public async Task<LocalChat> CreateDialog(string compName) => 
             await GetPlugin<CreateDialogPlugin>().CreateDialog(compName);
+        public async Task DeleteChat(string chatAlias)
+        {
+          
+        }
 
     }
 }

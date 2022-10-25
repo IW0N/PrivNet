@@ -9,12 +9,15 @@ using WebClient.LocalDb.Entities.Keys;
 using WebClient.LocalDb;
 using WebClient.LocalDb.Entities.UserEnvironment;
 using System.Web;
+using Microsoft.EntityFrameworkCore;
+using System.Collections;
+
 namespace WebClient
 {
     class PollingReciever:IUpdateReciever
     { 
-        public event Action<Update> OnUpdateRecieved;
-        public event Action<ChatInvite> OnChatInviteRecieved;
+        public event Action<Update> OnNewUpdate;
+        public event Action<ChatInvite> OnNewChatInvite;
         public event Action<ChatBan> OnBanRecieved;
         public event Action<FriendInvite> OnNewFriendRequest;
         public event Action<FriendDeletion> OnFriendDeleted;
@@ -27,27 +30,30 @@ namespace WebClient
 
         public PollingReciever(int delayMilliseconds,LocalUser user)
         {
+         
             bindedUser = user;
             RequestDelay = delayMilliseconds;
-            OnUpdateRecieved += ReactBasicly;
+            OnNewUpdate += ReactBasicly;
             OnBanRecieved += RemoveChatInDb;
             OnFriendDeleted += RemoveFriend;
             OnNewFriendRequest +=SetNewFriendRequestToDb;
 
+
             recieverThread = new(PollServer);
         }
-        public void Listen()
+        public void Listen()=>recieverThread.Start();
+        async Task DeleteUpdate(Update upd)
         {
-            recieverThread.Start();
-            Thread.Sleep(RequestDelay);
+            string requestStr = ClientContext.Webroot + "/update";
+             Client.DeleteAsync();
         }
         private void PollServer()
         {
             while (true)
             {
                 var upd=GetUpdate();
-                if(!upd.IsVoid()&&OnUpdateRecieved!=null)
-                    OnUpdateRecieved(upd);
+                if(!upd.IsVoid()&& OnNewUpdate != null)
+                    OnNewUpdate(upd);
               
                 Thread.Sleep(RequestDelay);
             }
@@ -70,28 +76,30 @@ namespace WebClient
             using var db = new PrivNetLocalDb();
             bindedUser.CipherKey.IV = upd.NextIV;
             bindedUser.Alias = upd.NextAlias;
-            
-            lock (db)
-            { 
-                db.Users.Update(bindedUser);
-                db.SaveChanges();
-            }
+
+            bindedUser=db.Users.
+                Include(user=>user.CipherKey).
+                First(user=>user.Nickname==bindedUser.Nickname);
+            bindedUser.Alias = upd.NextAlias;
+            bindedUser.CipherKey.IV = upd.NextIV;
+            db.SaveChanges();
         }
         private void ReactBasicly(Update update)
         {
+            
             var chatInvites = update.ChatInvites;
             var chatBans=update.Bans;
             var friendInvites = update.FriendInvites;
             var friendDeletions = update.FriendDeletions;
 
-            ExecuteEventForEach(chatInvites, OnChatInviteRecieved);
+            ExecuteEventForEach(chatInvites, OnNewChatInvite);
             ExecuteEventForEach(chatBans, OnBanRecieved);
             ExecuteEventForEach(friendInvites, OnNewFriendRequest);
             ExecuteEventForEach(friendDeletions, OnFriendDeleted);
         }
-        private static void ExecuteEventForEach<T>(List<T> list,Action<T> _event)
+        private static void ExecuteEventForEach<T, T1>(ICollection<T1> list, Action<T> _event) where T1:T
         {
-            if (list.Count > 0)
+            if (list.Count > 0&&_event!=null)
                 foreach (var element in list)
                     _event(element);
         }

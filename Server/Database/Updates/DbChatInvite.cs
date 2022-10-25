@@ -7,10 +7,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Server.Database.Updates
 {
 
-    public class DbChatInvite:ChatInvite,IDbUpdate
+    public class DbChatInvite:ChatInvite,IDbUpdateElement
     {
         public Chat Chat { get; init; }
-        public long AddresseeId { get; init; }
-        public User Addressee { get; init; }
+        public string UpdateId { get; init; }
+        public DbUpdate Update { get; init; }
+        public void NotifyUsers()
+        {
+            //Update.ChatInvites.Add(this);
+
+        }
     }
 }

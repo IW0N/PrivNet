@@ -30,18 +30,54 @@ namespace Server.RequestHandlers
             {
                 string aliasId = authResult.AliasId;
                 var request = authResult.Request;
-                var (chat,invites) = CreateChat(request, db, aliasId);
-                foreach (var invite in invites)
-                    UpdateHandler.Notify(invite);
-             
-               
-                return BuildResponse(db, chat);
+                var chat = CreateChat(request, db, aliasId);
+                
+                var response= BuildResponse(db, chat);
+                NotifyAboutNewChat(chat);
+                db.SaveChanges();
+                return response;
             }
             else
                 return Results.Unauthorized();
             
         }
-       
+        static DbChatRole GetRoleInChat(User participant, Chat chat) => 
+            chat.Roles.First(role => role.UserId == participant.Id);
+        static DbChatInvite BuildChatInvite(User participant, User initiator,Chat chat)
+        {
+            DbUpdate userUpd = participant.Update;
+            
+            DbChatInvite invite = new()
+            {
+                Chat = chat,
+                ChatId = chat.Id,
+                InviteLink = new TokenGenerator().GenerateToken(),
+                SenderId = initiator.Id,
+                Update = userUpd,
+                UpdateId = userUpd.Id
+            };
+            return invite;
+        }
+        static void NotifyAboutNewChat(Chat chat)
+        {
+            User initiator = null;
+          
+            foreach (var participant in chat.Participants)
+            {
+                DbChatRole role = GetRoleInChat(participant, chat);
+                if (role.Role != ChatRole.Owner)
+                {
+                    DbUpdate userUpd = participant.Update;
+                    var invite=BuildChatInvite(participant, initiator, chat);
+                    userUpd.ChatInvites.Add(invite);
+                 
+                }
+                else
+                    initiator = participant;
+            }
+           
+        }
+        
         static DbRSALock BuildLock(Chat chat,CreateChatRequest request,UserAlias uAlias)=> 
             new()
             {
@@ -60,11 +96,10 @@ namespace Server.RequestHandlers
         {
             string initName = participants[0];
             string compName = participants[1];
-            var users = 
-                db.Users.
-                    Include(user=>user.Alias).
-                    Include(user=>user.CipherKey);
-            
+            db.Users.Load();
+            db.GlobalUpdates.Load();
+            var users = db.Users;
+             
             User initiator = users.First(user => user.Name == initName);
             User companion = users.First(user=>user.Name==compName);
             chat.Participants[0] = initiator;
@@ -105,15 +140,7 @@ namespace Server.RequestHandlers
                 chat.Roles.Add(role);
             }
         }
-        static DbChatInvite BuildChatInvite(User chatInitiator,User participant,Chat chat)=> 
-            new()
-            {
-                Addressee=participant,
-                SenderId=chatInitiator.Id,
-                ChatId=chat.Id, Chat=chat, 
-                InviteLink=new TokenGenerator().GenerateToken()
-            };
-        
+    
         static List<DbChatInvite> BuildChatInvites(User initiator,Chat chat)
         {
             List<DbChatInvite> invites = new();
@@ -121,13 +148,15 @@ namespace Server.RequestHandlers
             {
                 if (participant.Id != initiator.Id)
                 {
+                    var participantUpd = participant.Update;
                     var newInvite=BuildChatInvite(initiator, participant, chat);
+                    participantUpd.ChatInvites.Add(newInvite);
                     invites.Add(newInvite);
                 }
             }
             return invites;
         }
-        static (Chat chat,List<DbChatInvite> invite) CreateChat(CreateChatRequest request,PrivNetDb db, string userAlias)
+        static Chat CreateChat(CreateChatRequest request,PrivNetDb db, string userAlias)
         {
             var chat = new Chat
             {
@@ -139,13 +168,13 @@ namespace Server.RequestHandlers
             UserAlias uAlias = db.UserAliases.Find(userAlias);
             var _lock = BuildLock(chat, request, uAlias);
             SetParticipants(chat, request, db);
+
             SetDbRoles(chat);
             chat.Aliases.Add(chatAlias);
-            db.Chats.Add(chat);
             chat.Locks.Add(_lock);
-            db.SaveChanges();
-            var chatInvites=BuildChatInvites(uAlias.Table,chat);
-            return (chat,chatInvites);
+            db.Chats.Add(chat);
+           
+            return chat;
         }
         static IResult BuildResponse(PrivNetDb db,Chat chat)
         {
@@ -156,7 +185,8 @@ namespace Server.RequestHandlers
             {
                 
                 NextChatAlias = chat.Aliases[0].AliasId,
-                NextAlias=generator.GenerateToken(10,60)
+                NextAlias=generator.GenerateToken(10,60),
+                NextIV=creator.CipherKey.IV
             };
             db.SaveChanges();
             byte[] encrResponse = response.Encrypt(creator.CipherKey);

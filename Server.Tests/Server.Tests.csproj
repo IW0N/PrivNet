@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PrivNet2\Server.csproj" />
+    <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
 
 </Project>
