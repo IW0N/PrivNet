@@ -12,6 +12,8 @@ using System.Web;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
 using Common.Requests;
+using Common.Responses;
+
 namespace WebClient
 {
     using static ClientContext;
@@ -45,7 +47,10 @@ namespace WebClient
         void CleanUpdates()
         {
             DeleteUpdateRequest delRequest = new(Client) { Alias=bindedUser.Alias};
-            
+            var aesKey = bindedUser.CipherKey;
+            var delResultTask=delRequest.Send<DeleteUpdateResponse>(aesKey);
+            var delResult = delResultTask.Result;
+            UpdateDbInfo(delResult);
         }
         private void PollServer()
         {
@@ -54,7 +59,7 @@ namespace WebClient
                 var upd=GetUpdate();
                 if(!upd.IsVoid()&& OnNewUpdate != null)
                     OnNewUpdate(upd);
-              
+                CleanUpdates();
                 Thread.Sleep(RequestDelay);
             }
         }
@@ -68,19 +73,16 @@ namespace WebClient
             UpdateDbInfo(upd);
             return upd;
         }
-        private void UpdateDbInfo(Update upd)
+        private void UpdateDbInfo(BaseResponse response)
         {
             Db = new PrivNetLocalDb();
             lock (Db)
             {
-                bindedUser.CipherKey.IV = upd.NextIV;
-                bindedUser.Alias = upd.NextAlias;
-
                 bindedUser = Db.Users.
                     Include(user => user.CipherKey).
                     First(user => user.Nickname == bindedUser.Nickname);
-                bindedUser.Alias = upd.NextAlias;
-                bindedUser.CipherKey.IV = upd.NextIV;
+                bindedUser.Alias = response.NextAlias;
+                bindedUser.CipherKey.IV = response.NextIV;
                 Db.SaveChanges();
                 Db.Dispose();
             }
