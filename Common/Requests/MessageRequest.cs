@@ -10,6 +10,7 @@ namespace Common.Requests
     //It must be send in encrypted form
     public class MessageRequest : BaseRequest
     {
+        public MessageRequest(HttpClient client) : base(client) { }
         public Dictionary<string, byte[]> Files { get; } = new();
         public BigInteger FileGroup { get; init; }
         public long SenderId { get; init; }

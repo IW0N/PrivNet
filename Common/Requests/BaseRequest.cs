@@ -11,18 +11,23 @@ namespace Common.Requests
 {
     public abstract class BaseRequest:WebCipher
     {
+        public BaseRequest(HttpClient client)
+        {
+            Client = client;
+        }
         public string Alias { get; init; }
         //public string Password { get; init; }
         public virtual HttpMethod Method { get; init; }
+        public HttpClient Client { get; }
         public abstract string RequestUrl { get; }
         public static string WebRoot { get; set; }
-
-        public async Task<TResponse> Send<TResponse>(HttpClient client,string url)
+        
+        public async Task<TResponse> Send<TResponse>(string url)
             where TResponse:BaseResponse
         {
             Type t=GetType();
             object obj = Convert.ChangeType(this,t);
-            var respMessage=await client.PostAsJsonAsync(url,obj);
+            var respMessage=await Client.PostAsJsonAsync(url,obj);
             var response=await respMessage.Content.ReadFromJsonAsync<TResponse>();
             return response;
         }
@@ -38,7 +43,7 @@ namespace Common.Requests
             paramsString=paramsString.Remove(paramsString.Length - 1);
             return paramsString;
         }
-        public async Task<TResponse> Send<TResponse>(HttpClient client,AesKey key, Dictionary<string, string> webParams=null) 
+        public async Task<TResponse> Send<TResponse>(AesKey key, Dictionary<string, string> webParams=null) 
             where TResponse:BaseResponse
         {
             byte[]? encrypted = Encrypt(key);
@@ -47,7 +52,7 @@ namespace Common.Requests
             var content = encrypted!=null?new ByteArrayContent(encrypted):null;
             
             HttpRequestMessage message = new(Method, requestUri) { Content=content };
-            var response=await client.SendAsync(message);
+            var response=await Client.SendAsync(message);
             var respContent=response.Content;
             byte[] respBytes=await respContent.ReadAsByteArrayAsync();
 

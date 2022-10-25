@@ -42,10 +42,9 @@ namespace WebClient
             recieverThread = new(PollServer);
         }
         public void Listen()=>recieverThread.Start();
-        async Task CleanUpdates(Update upd)
+        void CleanUpdates()
         {
-            
-            DeleteUpdateRequest delRequest = new();
+            DeleteUpdateRequest delRequest = new(Client) { Alias=bindedUser.Alias};
             
         }
         private void PollServer()
@@ -61,10 +60,10 @@ namespace WebClient
         }
         private Update GetUpdate()
         {
-            GetUpdateRequest getRequest = new() { Alias=bindedUser.Alias};
+            GetUpdateRequest getRequest = new(Client) { Alias=bindedUser.Alias};
             var key = bindedUser.CipherKey;
 
-            Task<Update> updTask=getRequest.Send<Update>(Client,key);
+            Task<Update> updTask=getRequest.Send<Update>(key);
             Update upd = updTask.Result; 
             UpdateDbInfo(upd);
             return upd;

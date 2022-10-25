@@ -9,6 +9,7 @@ namespace Common.Requests
 {
     public class DeleteUpdateRequest : BaseRequest
     {
+        public DeleteUpdateRequest(HttpClient client) : base(client) { }
         public override HttpMethod Method { get => HttpMethod.Delete; }
         public override string RequestUrl => "/api/user/update";
 

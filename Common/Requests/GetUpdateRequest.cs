@@ -8,6 +8,7 @@ namespace Common.Requests
 {
     public class GetUpdateRequest:BaseRequest
     {
+        public GetUpdateRequest(HttpClient client) : base(client) { }
         public override string RequestUrl => "/api/user/update";
         public override HttpMethod Method { get => HttpMethod.Get; }
     }

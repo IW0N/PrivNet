@@ -51,7 +51,7 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
             using var rsa = new RSACryptoServiceProvider(2048);
             var request = reqBuilder.BuildNewChatRequest(chatName, type, participants, rsa);
             string fullUri = Webroot + "/api/user/chat";
-            var response = await request.Send<CreateChatResponse>(client, UserCipherKey);
+            var response = await request.Send<CreateChatResponse>(UserCipherKey);
             var rsaLock = entBuilder.BuildEntity<RSALock>(rsa);
            
             Db = new PrivNetLocalDb();

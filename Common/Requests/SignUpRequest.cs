@@ -13,6 +13,7 @@ namespace Common.Requests
 {
     public class SignUpRequest:BaseRequest
     {
+        public SignUpRequest(HttpClient client) : base(client) { }
         public string Username { get; set; }
         public byte[] Avatar { get; set; }
         public override string RequestUrl => "/api/user";

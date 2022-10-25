@@ -9,11 +9,13 @@ namespace Common.Requests
 {
     public class CreateChatRequest:BaseRequest
     {
+        public CreateChatRequest(HttpClient client) : base(client) { }
         public ChatType Type { get; set; }
         public string ChatName { get; init; }
         public List<string> Usernames { get; } = new();
         public override string RequestUrl => "/api/user/chat";
         //rsa public key for encryption chat aes key
         public byte[] RsaLock { get; init; }
+        
     }
 }

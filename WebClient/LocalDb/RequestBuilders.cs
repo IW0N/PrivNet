@@ -19,7 +19,7 @@ namespace WebClient.LocalDb
         public static SignUpRequest BuildSignUp(string username)
         {
             var generator = new TokenGenerator();
-            var request = new SignUpRequest
+            var request = new SignUpRequest(ClientContext.WebClient)
             {
                 Username = username,
                 Alias = generator.GenerateToken(10, 40)
@@ -29,7 +29,7 @@ namespace WebClient.LocalDb
         public CreateChatRequest BuildNewChatRequest(string chatName,ChatType type, IEnumerable<string> participants,RSACryptoServiceProvider rsa)
         {
            // using var rsa = new RSACryptoServiceProvider(2048);
-            CreateChatRequest request = new()
+            CreateChatRequest request = new(ClientContext.WebClient)
             {
                 Alias = _user.Alias,
                 RsaLock = rsa.ExportRSAPublicKey(),
