@@ -9,6 +9,6 @@ builder.Configure();
 var app = builder.Build();
 app.MapPost("/api/user",SignupHandler.SignUp);
 app.MapPost("/api/user/chat",ChatHandler.Create);
-app.MapGet("/api/update",UpdateHandler.GetUpdate);
+app.MapGet("/api/user/update",UpdateHandler.GetUpdate);
 //app.MapDelete("/api/update",UpdateHandler.);
 app.Run();

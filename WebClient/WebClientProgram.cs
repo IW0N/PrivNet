@@ -15,8 +15,11 @@ user1=LocalUser.GetUser(username1);
 #if !SIGN_UP
 user2 = LocalUser.GetUser(username2);
 #endif
+/*PollingReciever user2Reciever = new(1000, user2);
+user2Reciever.OnNewUpdate += upd => Console.WriteLine(upd.Id);
+user2Reciever.Listen();*/
 PollingReciever user2Reciever = new(1000, user2);
-user2Reciever.OnNewUpdate += upd => Console.WriteLine(upd.ChatInvites.ElementAt(0));
+user2Reciever.OnNewUpdate += upd => Console.WriteLine(upd.Id);
 user2Reciever.Listen();
 /*PollingReciever nickReciever = new(1000, user2);
 nickReciever.Listen();*/

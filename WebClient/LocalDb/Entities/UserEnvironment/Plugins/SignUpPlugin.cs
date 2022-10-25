@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
 {
+    using static ClientContext;
     class SignUpPlugin:Plugin
     {
 
@@ -17,14 +18,16 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
         {
             var request = webRequest;
             
-            var resp = await webRequest.Send(client, ClientContext.Webroot + "/api/user");
+            var resp = await webRequest.Send(client, Webroot + "/api/user");
             var newUser = userBuilder.Invoke(request,resp);
-            ClientContext.ActiveUser = newUser;
-            using (var db = new PrivNetLocalDb(LocalUser.isTest))
+            ActiveUser = newUser;
+            Db = new PrivNetLocalDb(LocalUser.isTest);
+            lock(Db)
             {
-                db.Users.Add(newUser);
-                db.UserCipherKeys.Add(newUser.CipherKey);
-                db.SaveChanges();
+                Db.Users.Add(newUser);
+                Db.UserCipherKeys.Add(newUser.CipherKey);
+                Db.SaveChanges();
+                Db.Dispose();
             }
             return newUser;
         }

@@ -5,15 +5,18 @@ using Common.Responses;
 using System.Net.Http.Json;
 using Newtonsoft.Json.Linq;
 using System.Web;
+using System.Net;
 
 namespace Common.Requests
 {
-    public class BaseRequest:WebCipher
+    public abstract class BaseRequest:WebCipher
     {
         public string Alias { get; init; }
         //public string Password { get; init; }
         public virtual HttpMethod Method { get; init; }
-        
+        public abstract string RequestUrl { get; }
+        public static string WebRoot { get; set; }
+
         public async Task<TResponse> Send<TResponse>(HttpClient client,string url)
             where TResponse:BaseResponse
         {
@@ -23,14 +26,27 @@ namespace Common.Requests
             var response=await respMessage.Content.ReadFromJsonAsync<TResponse>();
             return response;
         }
-        public async Task<TResponse> Send<TResponse>(HttpClient client,string requestUri,AesKey key) 
+        string GetParamString(Dictionary<string,string>? webParams)
+        {
+            string webAlias = HttpUtility.UrlEncode(Alias);
+            string paramsString = $"?aliasId={webAlias}&";
+            if (webParams!=null&&webParams.Count>0)
+            {
+                foreach (var webParam in webParams)
+                    paramsString +=$"{webParam.Key}={webParam.Value}&";   
+            }
+            paramsString=paramsString.Remove(paramsString.Length - 1);
+            return paramsString;
+        }
+        public async Task<TResponse> Send<TResponse>(HttpClient client,AesKey key, Dictionary<string, string> webParams=null) 
             where TResponse:BaseResponse
         {
             byte[]? encrypted = Encrypt(key);
+            string paramString = GetParamString(webParams);
+            string requestUri = WebRoot+RequestUrl+paramString;
             var content = encrypted!=null?new ByteArrayContent(encrypted):null;
-            string aliasUrl=HttpUtility.UrlEncode(Alias);
             
-            HttpRequestMessage message = new(Method, requestUri+=$"?aliasId={aliasUrl}") { Content=content };
+            HttpRequestMessage message = new(Method, requestUri) { Content=content };
             var response=await client.SendAsync(message);
             var respContent=response.Content;
             byte[] respBytes=await respContent.ReadAsByteArrayAsync();

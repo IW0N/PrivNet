@@ -1,11 +1,6 @@
 ﻿using Common.Database.Chat;
 using Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using WebClient.LocalDb.Entities.Keys;
 using static WebClient.ClientContext;
 using Common.Responses;
@@ -38,7 +33,6 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
                 chat.Participants.Add(companion);
 
             }
-            //db.SaveChanges();
 
         }
         static void SetUpIds(LocalChat chat)
@@ -57,7 +51,7 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
             using var rsa = new RSACryptoServiceProvider(2048);
             var request = reqBuilder.BuildNewChatRequest(chatName, type, participants, rsa);
             string fullUri = Webroot + "/api/user/chat";
-            var response = await request.Send<CreateChatResponse>(client, fullUri, UserCipherKey);
+            var response = await request.Send<CreateChatResponse>(client, UserCipherKey);
             var rsaLock = entBuilder.BuildEntity<RSALock>(rsa);
            
             Db = new PrivNetLocalDb();

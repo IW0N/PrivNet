@@ -15,6 +15,7 @@ namespace Common.Requests
     {
         public string Username { get; set; }
         public byte[] Avatar { get; set; }
+        public override string RequestUrl => "/api/user";
         public override HttpMethod Method { get => HttpMethod.Post; }
         public AesKey Key { get; private set; }
         

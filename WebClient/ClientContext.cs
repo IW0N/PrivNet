@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Common.Requests;
+using Newtonsoft.Json;
 using WebClient.LocalDb;
 using WebClient.LocalDb.Entities.UserEnvironment;
 
@@ -26,6 +27,7 @@ namespace WebClient
             
             string serialized = File.ReadAllText("client_configs.json");
             Configs = JsonConvert.DeserializeObject<ExternalConfigs>(serialized);
+            BaseRequest.WebRoot = Webroot;
         }
 
     }

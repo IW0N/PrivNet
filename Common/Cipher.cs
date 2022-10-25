@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Common
 {
-    public class WebCipher
+    public abstract class WebCipher
     {
         public static T? Decrypt<T>(byte[] encrypted, AesKey key) where T : WebCipher
         {

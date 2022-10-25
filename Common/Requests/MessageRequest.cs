@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 namespace Common.Requests
 {
     //It must be send in encrypted form
-    public class MessageRequest:BaseRequest
+    public class MessageRequest : BaseRequest
     {
         public Dictionary<string, byte[]> Files { get; } = new();
         public BigInteger FileGroup { get; init; }
+        public long SenderId { get; init; }
         public byte[] Text { get; init; }
+        public override string RequestUrl => "/api/user/chat/message";
     }
 }

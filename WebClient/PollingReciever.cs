@@ -11,9 +11,10 @@ using WebClient.LocalDb.Entities.UserEnvironment;
 using System.Web;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
-
+using Common.Requests;
 namespace WebClient
 {
+    using static ClientContext;
     class PollingReciever:IUpdateReciever
     { 
         public event Action<Update> OnNewUpdate;
@@ -24,8 +25,7 @@ namespace WebClient
         
         public int RequestDelay { get; }
         readonly Thread recieverThread;
-        static string WebRoot { get => ClientContext.Webroot; }
-        static HttpClient Client { get => ClientContext.WebClient; }
+        static HttpClient Client { get => WebClient; }
         LocalUser bindedUser;
 
         public PollingReciever(int delayMilliseconds,LocalUser user)
@@ -42,10 +42,11 @@ namespace WebClient
             recieverThread = new(PollServer);
         }
         public void Listen()=>recieverThread.Start();
-        async Task DeleteUpdate(Update upd)
+        async Task CleanUpdates(Update upd)
         {
-            string requestStr = ClientContext.Webroot + "/update";
-             Client.DeleteAsync();
+            
+            DeleteUpdateRequest delRequest = new();
+            
         }
         private void PollServer()
         {
@@ -60,29 +61,30 @@ namespace WebClient
         }
         private Update GetUpdate()
         {
+            GetUpdateRequest getRequest = new() { Alias=bindedUser.Alias};
             var key = bindedUser.CipherKey;
-            string userAlias = bindedUser.Alias;
-            string webUserAlias = HttpUtility.UrlEncode(userAlias);
-            var webResponse= Client.GetAsync($"{WebRoot}/api/update?aliasId={webUserAlias}").Result;
-            var webContent=webResponse.Content;
-            Task<byte[]> readBytesTask=webContent.ReadAsByteArrayAsync();
-            byte[] content=readBytesTask.Result;
-            Update upd=content.DecryptObject<Update>(key);
+
+            Task<Update> updTask=getRequest.Send<Update>(Client,key);
+            Update upd = updTask.Result; 
             UpdateDbInfo(upd);
             return upd;
         }
         private void UpdateDbInfo(Update upd)
         {
-            using var db = new PrivNetLocalDb();
-            bindedUser.CipherKey.IV = upd.NextIV;
-            bindedUser.Alias = upd.NextAlias;
+            Db = new PrivNetLocalDb();
+            lock (Db)
+            {
+                bindedUser.CipherKey.IV = upd.NextIV;
+                bindedUser.Alias = upd.NextAlias;
 
-            bindedUser=db.Users.
-                Include(user=>user.CipherKey).
-                First(user=>user.Nickname==bindedUser.Nickname);
-            bindedUser.Alias = upd.NextAlias;
-            bindedUser.CipherKey.IV = upd.NextIV;
-            db.SaveChanges();
+                bindedUser = Db.Users.
+                    Include(user => user.CipherKey).
+                    First(user => user.Nickname == bindedUser.Nickname);
+                bindedUser.Alias = upd.NextAlias;
+                bindedUser.CipherKey.IV = upd.NextIV;
+                Db.SaveChanges();
+                Db.Dispose();
+            }
         }
         private void ReactBasicly(Update update)
         {
