@@ -11,19 +11,24 @@ using Server.Database.Updates;
 using Server.Database.Updates.Environment;
 using System.Collections;
 using System.Web;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Update = Common.Responses.UpdateSpace.Update;
 
 namespace Server.RequestHandlers
 {
     public class UpdateHandler
-    {  
+    {
+        
         static UserAlias GetAlias(PrivNetDb db,string aliasId)
         {
-            db.GlobalUpdates.Load();
+            DbUpdate.IncludeAll(db.GlobalUpdates).First(upd=>upd.Owner.AliasId==aliasId);
+            
             UserAlias uAlias = db.UserAliases.
                 Include(alias => alias.Table).
                     ThenInclude(user => user.Update).
                 Include(alias => alias.Table.CipherKey).
                 First(a => a.AliasId == aliasId);
+
             return uAlias;
         }
         static IResult GetUpdateSynchrously(HttpContext context, PrivNetDb db)
@@ -42,8 +47,10 @@ namespace Server.RequestHandlers
         {
             string aliasId = context.Request.Query["aliasId"];
             var uAlias = GetAlias(db, aliasId);
-            AesKey key = uAlias.Table.CipherKey;
-            db.GlobalUpdates.Remove(uAlias.Table.Update);
+            User user = uAlias.Table;
+            AesKey key = user.CipherKey;
+            user.Update.Clean();
+          
             byte[] newIV=key.GetNewIV();
             BaseResponse response = new() { NextAlias = generator.GenerateToken(), NextIV=newIV };
             

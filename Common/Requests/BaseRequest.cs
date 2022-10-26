@@ -43,20 +43,38 @@ namespace Common.Requests
             paramsString=paramsString.Remove(paramsString.Length - 1);
             return paramsString;
         }
+        string BuildFullUrl(Dictionary<string, string> webParams)
+        {
+            string paramString = GetParamString(webParams);
+            string requestUri = WebRoot + RequestUrl + paramString;
+            return requestUri;
+        }
+        HttpRequestMessage GetHttpRequest(AesKey key,string fullRequestUrl)
+        {
+            byte[]? encrypted = Encrypt(key);
+            var content = encrypted != null ? new ByteArrayContent(encrypted) : null;
+
+            HttpRequestMessage message = new(Method, fullRequestUrl) { Content = content };
+            return message;
+        }
+        async Task<TResponse> DecryptResponse<TResponse>(AesKey key,HttpResponseMessage response)
+            where TResponse : BaseResponse
+        {
+            var respContent = response.Content;
+            byte[] respBytes = await respContent.ReadAsByteArrayAsync();
+
+            var result = Decrypt<TResponse>(respBytes, key);
+            return result;
+        }
         public async Task<TResponse> Send<TResponse>(AesKey key, Dictionary<string, string> webParams=null) 
             where TResponse:BaseResponse
         {
-            byte[]? encrypted = Encrypt(key);
-            string paramString = GetParamString(webParams);
-            string requestUri = WebRoot+RequestUrl+paramString;
-            var content = encrypted!=null?new ByteArrayContent(encrypted):null;
-            
-            HttpRequestMessage message = new(Method, requestUri) { Content=content };
-            var response=await Client.SendAsync(message);
-            var respContent=response.Content;
-            byte[] respBytes=await respContent.ReadAsByteArrayAsync();
+            string requestUri =BuildFullUrl(webParams);
 
-            var result=Decrypt<TResponse>(respBytes, key);
+            HttpRequestMessage message = GetHttpRequest(key, requestUri);
+            HttpResponseMessage response = await Client.SendAsync(message);
+
+            TResponse result = await DecryptResponse<TResponse>(key, response);
             return result;
         }
         public new byte[]? Encrypt(AesKey key)
