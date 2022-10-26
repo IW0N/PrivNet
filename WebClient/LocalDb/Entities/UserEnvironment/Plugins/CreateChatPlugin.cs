@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using WebClient.LocalDb.Entities.Keys;
 using static WebClient.ClientContext;
 using Common.Responses;
+using Common.Requests;
 
 namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
 {
@@ -48,9 +49,9 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
         }
         public async Task<LocalChat> CreateChat(string chatName, List<string> participants, ChatType type)
         {
+           
             using var rsa = new RSACryptoServiceProvider(2048);
             var request = reqBuilder.BuildNewChatRequest(chatName, type, participants, rsa);
-            string fullUri = Webroot + "/api/user/chat";
             var response = await request.Send<CreateChatResponse>(UserCipherKey);
             var rsaLock = entBuilder.BuildEntity<RSALock>(rsa);
            

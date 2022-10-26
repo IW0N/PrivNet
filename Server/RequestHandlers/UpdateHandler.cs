@@ -56,6 +56,7 @@ namespace Server.RequestHandlers
             
             byte[] encrypted=response.Encrypt(key);
             key.IV = newIV;
+            user.Alias = new UserAlias(response.NextAlias, user);
             db.SaveChanges();
             
             return Results.Bytes(encrypted);

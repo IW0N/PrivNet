@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -26,6 +27,7 @@ namespace Common
         public byte[] GetNewIV()
         {
             using Aes aes = Aes.Create();
+            aes.Key=Key;
             aes.GenerateIV();
             return aes.IV;
         }

@@ -50,6 +50,7 @@ namespace WebClient
             var aesKey = bindedUser.CipherKey;
             var delResultTask=delRequest.Send<DeleteUpdateResponse>(aesKey);
             var delResult = delResultTask.Result;
+           
             UpdateDbInfo(delResult);
         }
         private void PollServer()
@@ -57,9 +58,11 @@ namespace WebClient
             while (true)
             {
                 var upd=GetUpdate();
-                if(!upd.IsVoid()&& OnNewUpdate != null)
+                if (!upd.IsVoid() && OnNewUpdate != null)
+                {
                     OnNewUpdate(upd);
-                CleanUpdates();
+                    CleanUpdates();
+                }
                 Thread.Sleep(RequestDelay);
             }
         }

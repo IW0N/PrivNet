@@ -14,12 +14,19 @@ namespace Server.Middlewares
         {
             this.next = next;
         }
+        string CompressAliasId(string aliasId)
+        {
+            const int newAliasLength = 5;//first n symbols, that to be returned
+            string newAlias = aliasId.Substring(0,newAliasLength);
+            return newAlias;
+        }
         async Task CheckForAliasCorrectness(HttpContext context,PrivNetDb db,string aliasId)
         {
             UserAlias? alias = await db.UserAliases.FindAsync(aliasId);
             if (alias == null)
             {
-                string error = $"Alias {aliasId} not found!";
+                string compressedAlias = CompressAliasId(aliasId);
+                string error = $"Alias {compressedAlias}... not found!";
                 await ResponseByError(context, error, 404);
             }
             else

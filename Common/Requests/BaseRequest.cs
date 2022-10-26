@@ -66,14 +66,22 @@ namespace Common.Requests
             var result = Decrypt<TResponse>(respBytes, key);
             return result;
         }
+        void ThrowIfWebError(HttpResponseMessage response)
+        {
+            int statusCode = (int)response.StatusCode;
+            var readStringTask=response.Content.ReadAsStringAsync();
+            var description=readStringTask.Result;
+            if ((int)response.StatusCode >= 400)
+                throw new WebException($"Web error! Code:{statusCode} Description: {description}");
+        }
         public async Task<TResponse> Send<TResponse>(AesKey key, Dictionary<string, string> webParams=null) 
             where TResponse:BaseResponse
         {
-            string requestUri =BuildFullUrl(webParams);
+            string requestUri = BuildFullUrl(webParams);
 
             HttpRequestMessage message = GetHttpRequest(key, requestUri);
             HttpResponseMessage response = await Client.SendAsync(message);
-
+            ThrowIfWebError(response);
             TResponse result = await DecryptResponse<TResponse>(key, response);
             return result;
         }
