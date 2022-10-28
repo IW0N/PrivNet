@@ -1,7 +1,16 @@
-﻿using Common.Responses.UpdateSpace;
+﻿using Common;
+using Common.Extensions;
+using Common.Responses.UpdateSpace;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using WebClient.LocalDb.Entities.Keys;
 using WebClient.LocalDb;
 using WebClient.LocalDb.Entities.UserEnvironment;
+using System.Web;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 using Common.Requests;
 using Common.Responses;
 
@@ -26,7 +35,7 @@ namespace WebClient
          
             bindedUser = user;
             RequestDelay = delayMilliseconds;
-            OnNewUpdate += ProcessNewUpdateBasicly;
+            OnNewUpdate += ReactBasicly;
             OnBanRecieved += RemoveChatInDb;
             OnFriendDeleted += RemoveFriend;
             OnNewFriendRequest +=SetNewFriendRequestToDb;
@@ -81,7 +90,7 @@ namespace WebClient
                 Db.Dispose();
             }
         }
-        private void ProcessNewUpdateBasicly(Update update)
+        private void ReactBasicly(Update update)
         {
             
             var chatInvites = update.ChatInvites;
