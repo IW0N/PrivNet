@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WebClient.View.Pages.SignUpPage" NavigationPage.HasNavigationBar="False">
+    <VerticalStackLayout Padding="60,0" Spacing="20" VerticalOptions="Center">
+        <Label Text="Sign up" FontSize="60" HorizontalOptions="Center"/>
+        
+        <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="15"> 
+            <Label Text="Username:" VerticalOptions="Center" />
+            <Entry WidthRequest="120" x:Name="username"/>
+            
+        </HorizontalStackLayout>
+        <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="15">
+            <Label Text="Password: " VerticalOptions="Center" x:Name="password"/>
+            <Entry IsPassword="True" WidthRequest="120"/>
+        </HorizontalStackLayout>
+        <Button Text="Sign up" VerticalOptions="Center" MaximumWidthRequest="200" Clicked="SignUp"/>
+        <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+            <Label Text="Are you have account already?" 
+                   VerticalOptions="Center"/>
+            <Button Text="Sign in!"/>
+
+        </HorizontalStackLayout>
+        
+    </VerticalStackLayout>
+</ContentPage>

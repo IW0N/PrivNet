@@ -16,7 +16,7 @@
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.webclient.view</ApplicationId>
-		<ApplicationIdGuid>7AEA4F11-10AE-40D3-8DCA-56EFD164D243</ApplicationIdGuid>
+		<ApplicationIdGuid>42799593-4851-4FAB-9AE1-71938B3B1C6C</ApplicationIdGuid>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -33,16 +33,12 @@
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-		
+
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
 		<!-- Images -->
-		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.svg" />
-    <MauiImage Include="Resources\Images\default_user_icon.png" />
-    <MauiImage Include="Resources\Images\main_page_folder.png" />
-    <MauiImage Include="Resources\Images\user_icon1.png" />
+    <MauiImage Include="Resources\Images\*" />
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
@@ -50,17 +46,18 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Remove="Resources\Images\default_user_icon.png" />
-	  <None Remove="Resources\Images\main_page_folder.png" />
-	  <None Remove="Resources\Images\notification.png" />
-	  <None Remove="Resources\Images\userIcon.png" />
-	  <None Remove="Resources\Images\user_icon.png" />
-	  <None Remove="Resources\Images\user_icon1.png" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\WebClient\WebClient.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Pages\MainPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\SignUpPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 </Project>

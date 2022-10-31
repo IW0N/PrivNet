@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="WebClient.View.MainPage">
+             x:Class="WebClient.View.MainPage"
+             NavigationPage.HasNavigationBar="False">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -30,10 +31,10 @@
                 </VerticalStackLayout>
             </ScrollView>
 
-            
-            
-            
-             <BoxView Color="#e1e0f0"
+
+
+
+            <BoxView Color="#e1e0f0"
                 Grid.Column="1" Grid.Row="0"/>
             <Entry 
                 BackgroundColor="#fafafc" 
@@ -46,27 +47,32 @@
                 />
             <!--Chat list-->
             <ScrollView BackgroundColor="#e6eef5" Grid.Column="1" Grid.Row="1">
-                <VerticalStackLayout Spacing="3" Padding="3">
-                    <Button
-                        BackgroundColor="Transparent" 
-                        BorderWidth="2" 
-                        BorderColor="Black" CornerRadius="10"
-                        Text="Lol"
-                        TextColor="Black" HorizontalOptions="Fill"
-                        />
+                <VerticalStackLayout Spacing="30" Padding="5">
+                    <Label Text="Lol" x:Name="test90"/>
                     <Line X2="4000" Stroke="LightGray"/>
                     <Label Text="Lol"/>
                     <Line X2="4000" Stroke="LightGray"/>
                     <Label Text="Lol"/>
                     <Line X2="4000" Stroke="LightGray"/>
-                    <Label Text="Lol"/>
-                    <Line X2="4000" Stroke="LightGray"/>
-                </VerticalStackLayout>                
+                </VerticalStackLayout>
+            </ScrollView>
+            <ScrollView Grid.Column="1" Grid.Row="1" Margin="0,-55,0,0" IsVisible="false" x:Name="menuUsersView">
+                <VerticalStackLayout BackgroundColor="#af909090"
+                    HorizontalOptions="Start" 
+                    x:Name="localUsers" 
+                     Padding="3" Spacing="3">
+                    <ImageButton Source="add_user_btn.png" WidthRequest="50" BackgroundColor="Transparent" Clicked="ImageButton_Clicked" x:Name="SignUp"/>
+                </VerticalStackLayout>
             </ScrollView>
             <BoxView Color="#e6dee5"/>
-            <ImageButton Source="user_icon1.png" Margin="5" Grid.Column="0" Grid.Row="0" BackgroundColor="#00000000"/>
+            <ImageButton
+                Source="default_user.png" 
+                Margin="5"
+                Grid.Column="0"
+                Grid.Row="0" 
+                BackgroundColor="#00000000" Clicked="OnAvatarClicked"/>
         </Grid>
-        
+
         <BoxView Color="Red" Grid.Column="1" Grid.Row="0"/>
     </Grid>
 </ContentPage>

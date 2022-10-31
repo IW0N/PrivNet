@@ -1,7 +1,7 @@
 ﻿using Common.Requests;
 using Common.Responses;
 using WebClient.LocalDb.Entities.UserEnvironment.Plugins;
-
+using static WebClient.ClientContext;
 namespace WebClient.LocalDb.Entities.UserEnvironment
 {
     public class LocalUser : LocalBaseUser
@@ -45,6 +45,15 @@ namespace WebClient.LocalDb.Entities.UserEnvironment
         public async Task DeleteChat(string chatAlias)
         {
           
+        }
+        public static IEnumerable<string> GetLocalUsers()
+        {
+            Db=new PrivNetLocalDb();
+            lock (Db)
+            {
+                var users=Db.Users.Select(user => user.Nickname);
+                return users;
+            }
         }
 
     }

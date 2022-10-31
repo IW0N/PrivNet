@@ -24,7 +24,6 @@ namespace WebClient
         public static PrivNetLocalDb Db { get; set; } = null;
         static ClientContext()
         {
-            
             string serialized = File.ReadAllText("client_configs.json");
             Configs = JsonConvert.DeserializeObject<ExternalConfigs>(serialized);
             BaseRequest.WebRoot = Webroot;

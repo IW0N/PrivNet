@@ -30,7 +30,7 @@ namespace WebClient.Tests
             var dialog=await initiator.CreateDialog(secondName);
             
         }
-        public async Task TestGettingUserFromLocalDb()
+        public async Task TestGettingUsersFromLocalDb()
         {
 
         }
