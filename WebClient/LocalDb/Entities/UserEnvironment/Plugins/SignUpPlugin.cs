@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common.Requests.Post;
 
 namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
 {
@@ -14,12 +15,10 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
     {
 
         internal delegate LocalUser BuildUserDelegate(SignUpRequest req,SignUpResponse resp);
-        static async Task<LocalUser> SignUp(SignUpRequest webRequest,BuildUserDelegate userBuilder)
+        static async Task<LocalUser> SignUp(SignUpRequest request)
         {
-            var request = webRequest;
-            
-            var resp = await webRequest.Send(client, Webroot + "/api/user");
-            var newUser = userBuilder.Invoke(request,resp);
+            var resp = await request.Send(client);
+            var newUser = new LocalUser(request,resp);
             ActiveUser = newUser;
             Db = new PrivNetLocalDb(LocalUser.isTest);
             lock(Db)
@@ -31,10 +30,10 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
             }
             return newUser;
         }
-        public async Task<LocalUser> SignUp(string username,BuildUserDelegate userBuilder)
+        public async Task<LocalUser> SignUp(string username)
         {
             var request = RequestsBuilder.BuildSignUp(username);
-            var user = await SignUp(request,userBuilder);
+            var user = await SignUp(request);
             return user;
         }
     }

@@ -1,16 +1,18 @@
-﻿using System;
+﻿using Common.Requests.Base;
+using Common.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Requests
+namespace Common.Requests.Post
 {
     //It must be send in encrypted form
-    public class MessageRequest : BaseRequest
+    public class PostMessageRequest : PostRequest<BaseResponse>
     {
-        public MessageRequest(HttpClient client) : base(client) { }
+        public PostMessageRequest(string alias) : base(alias) { }
         public Dictionary<string, byte[]> Files { get; } = new();
         public BigInteger FileGroup { get; init; }
         public long SenderId { get; init; }

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Server.Database;
 using Server.Services;
 using Common;
+using Common.Responses;
+
 namespace Server
 {
     public static class WebApplicationExtension
@@ -14,7 +16,8 @@ namespace Server
             string connectionStr = configs.GetConnectionString("privNetDb");
             IServiceCollection services = builder.Services;
             services.AddDbContext<PrivNetDb>(options => options.UseSqlServer(connectionStr));
-            services.AddHttpClient();
+            //needs for post-processing response and setting up NextIv and NextAlias in 
+            services.AddSingleton<BaseResponse>();
             services.AddSingleton<AuthenticationService>();
             services.AddSingleton<TokenGenerator>();
             services.Configure<CryptoOptions>(builder.Configuration);

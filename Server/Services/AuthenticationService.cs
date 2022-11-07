@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Extensions;
-using Common.Requests;
+using Common.Requests.Base;
+using Common.Responses;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
 using System.Security.Cryptography;
@@ -12,7 +13,7 @@ namespace Server.Services
     {
         
         public AuthResult<T> Authenticate<T>(HttpContext context,PrivNetDb db) 
-            where T:BaseRequest
+            where T:WebCipher
         {
             var query = context.Request.Query;
             string aliasId = query["aliasId"];

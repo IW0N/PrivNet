@@ -1,8 +1,10 @@
-﻿using Common.Requests;
+﻿using Common;
+using Common.Requests;
+using Common.Requests.Base;
 
 namespace Server
 {
-    public class AuthResult<T> where T:BaseRequest
+    public class AuthResult<T> where T:WebCipher
     {
         public bool Authenticated { get; init; }
         public T Request { get; init; }

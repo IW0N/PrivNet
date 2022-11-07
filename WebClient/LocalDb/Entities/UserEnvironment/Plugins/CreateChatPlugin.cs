@@ -49,10 +49,10 @@ namespace WebClient.LocalDb.Entities.UserEnvironment.Plugins
         }
         public async Task<LocalChat> CreateChat(string chatName, List<string> participants, ChatType type)
         {
-           
+          
             using var rsa = new RSACryptoServiceProvider(2048);
             var request = reqBuilder.BuildNewChatRequest(chatName, type, participants, rsa);
-            var response = await request.Send<CreateChatResponse>(UserCipherKey);
+            var response = await client.Send(UserCipherKey, request);
             var rsaLock = entBuilder.BuildEntity<RSALock>(rsa);
            
             Db = new PrivNetLocalDb();

@@ -31,9 +31,6 @@
                 </VerticalStackLayout>
             </ScrollView>
 
-
-
-
             <BoxView Color="#e1e0f0"
                 Grid.Column="1" Grid.Row="0"/>
             <Entry 
@@ -44,18 +41,39 @@
                 Placeholder="Enter..."
                 PlaceholderColor="DarkGray"
                 Margin="7,0"
-                />
+                TextChanged="Entry_TextChanged" />
             <!--Chat list-->
-            <ScrollView BackgroundColor="#e6eef5" Grid.Column="1" Grid.Row="1">
-                <VerticalStackLayout Spacing="30" Padding="5">
-                    <Label Text="Lol" x:Name="test90"/>
-                    <Line X2="4000" Stroke="LightGray"/>
-                    <Label Text="Lol"/>
-                    <Line X2="4000" Stroke="LightGray"/>
-                    <Label Text="Lol"/>
-                    <Line X2="4000" Stroke="LightGray"/>
-                </VerticalStackLayout>
+            <VerticalStackLayout  Grid.Column="1" Grid.Row="1" BackgroundColor="#e6eef5">
+                <Grid HeightRequest="46" ColumnSpacing="4" Padding="5" 
+                      IsVisible="false" x:Name="findingModePanel">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="2"/>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Column="0" Text="Chats" BorderWidth="1.8"
+                            BackgroundColor="Transparent" TextColor="Black" VerticalOptions="Start"/>
+                    <Button Grid.Column="1" Text="Users" BorderWidth="1.8" BackgroundColor="Transparent" TextColor="Black"/>
+                    <Button Grid.Column="2" Text="Channels" BorderWidth="1.8" BackgroundColor="Transparent" TextColor="Black"/>
+                    <Line BackgroundColor="DodgerBlue" Grid.Row="2"/>
+                    <Line BackgroundColor="DodgerBlue" Grid.Row="2" Grid.Column="1"/>
+                    <Line BackgroundColor="DodgerBlue" Grid.Row="2" Grid.Column="2"/>
+                </Grid>
+                <ScrollView>
+                    <VerticalStackLayout Spacing="30" Padding="5">
+                        <Label Text="Lol" x:Name="test90"/>
+                        <Line X2="4000" Stroke="LightGray"/>
+                        <Label Text="Lol"/>
+                        <Line X2="4000" Stroke="LightGray"/>
+                        <Label Text="Lol"/>
+                        <Line X2="4000" Stroke="LightGray"/>
+                    </VerticalStackLayout>
             </ScrollView>
+            </VerticalStackLayout>
             <ScrollView Grid.Column="1" Grid.Row="1" Margin="0,-55,0,0" IsVisible="false" x:Name="menuUsersView">
                 <VerticalStackLayout BackgroundColor="#af909090"
                     HorizontalOptions="Start" 

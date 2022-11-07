@@ -12,6 +12,7 @@ namespace Common
 {
     public abstract class WebCipher
     {
+        
         public static T? Decrypt<T>(byte[] encrypted, AesKey key) where T : WebCipher
         {
             using Aes aes = Aes.Create();

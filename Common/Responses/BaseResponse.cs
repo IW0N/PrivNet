@@ -12,8 +12,8 @@ namespace Common.Responses
 {
     public class BaseResponse:WebCipher
     {
-        public string NextAlias { get; init; }
-        public byte[] NextIV { get; init; }
+        public string NextAlias { get; set; }
+        public byte[] NextIV { get; set; }
         
     }
 }

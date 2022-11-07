@@ -51,4 +51,12 @@ public partial class MainPage : ContentPage
     {
         Navigation.PushAsync(new Pages.SignUpPage());
     }
+
+    private async void Entry_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        Entry entry = (Entry)sender;
+        findingModePanel.IsVisible = true;
+        var userIds=await Client.GetUsers(entry.Text);
+        
+    }
 }

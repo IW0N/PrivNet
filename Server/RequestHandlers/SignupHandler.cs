@@ -1,6 +1,6 @@
 ﻿using Common;
 using Common.Extensions;
-using Common.Requests;
+using Common.Requests.Post;
 using Common.Responses;
 using Common.Services;
 using Microsoft.Extensions.Options;
@@ -89,7 +89,7 @@ namespace Server.RequestHandlers
                 NextIV = key.IV,
                 CipherKey = user.CipherKey.GetParent()
             };
-            byte[] encryptedResponse=response.Encrypt(key);
+            byte[] encryptedResponse=response.EncryptObject(response.CipherKey);
             return Results.Bytes(encryptedResponse);
         }
         public static async Task<IResult> SignUp(HttpContext context, PrivNetDb db, IOptions<CryptoOptions> crypto)=>

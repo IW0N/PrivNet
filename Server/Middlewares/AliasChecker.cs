@@ -1,4 +1,5 @@
 ﻿using Server.Database;
+using Server.Database.Base;
 using Server.Database.Base.Aliases;
 
 namespace Server.Middlewares
@@ -8,7 +9,8 @@ namespace Server.Middlewares
         private readonly RequestDelegate next;
         static readonly Dictionary<string,string> exceptionPathes = new() 
         {
-            {"/api/user","POST" }
+            {"/api/user","POST" },
+           
         };
         public AliasChecker(RequestDelegate next)
         {
@@ -17,7 +19,7 @@ namespace Server.Middlewares
         string CompressAliasId(string aliasId)
         {
             const int newAliasLength = 5;//first n symbols, that to be returned
-            string newAlias = aliasId.Substring(0,newAliasLength);
+            string newAlias = aliasId[..newAliasLength];
             return newAlias;
         }
         async Task CheckForAliasCorrectness(HttpContext context,PrivNetDb db,string aliasId)
@@ -31,6 +33,8 @@ namespace Server.Middlewares
             }
             else
                 await next(context);
+            
+            
         }
         static async Task ResponseByError(HttpContext context,string errorMessage,int statusCode)
         {
@@ -56,8 +60,9 @@ namespace Server.Middlewares
             HttpRequest request = requestContext.Request;
             string path = request.Path;
            
-            bool isExpetionPath = exceptionPathes.ContainsKey(path) && exceptionPathes[path]==request.Method;
-            if (isExpetionPath)
+            bool isExceptionPath = exceptionPathes.ContainsKey(path) && exceptionPathes[path]==request.Method;
+            
+            if (isExceptionPath)
                 await next(requestContext);
             else
                 await CheckAlias(request, db);

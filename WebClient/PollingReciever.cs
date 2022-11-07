@@ -1,18 +1,11 @@
-﻿using Common;
-using Common.Extensions;
-using Common.Responses.UpdateSpace;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WebClient.LocalDb.Entities.Keys;
+﻿using Common.Responses.UpdateSpace;
 using WebClient.LocalDb;
 using WebClient.LocalDb.Entities.UserEnvironment;
-using System.Web;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
-using Common.Requests;
 using Common.Responses;
+using Common.Requests.Delete;
+using Common.Requests.Get;
+using Common.Requests;
 
 namespace WebClient
 {
@@ -46,11 +39,11 @@ namespace WebClient
         public void Listen()=>recieverThread.Start();
         void CleanUpdates()
         {
-            DeleteUpdateRequest delRequest = new(Client) { Alias=bindedUser.Alias};
+            DeleteUpdateRequest delRequest = new (bindedUser.Alias);
             var aesKey = bindedUser.CipherKey;
-            var delResultTask=delRequest.Send<DeleteUpdateResponse>(aesKey);
+            var delResultTask=Client.Send(aesKey,delRequest);
             var delResult = delResultTask.Result;
-           
+            
             UpdateDbInfo(delResult);
         }
         private void PollServer()
@@ -68,11 +61,11 @@ namespace WebClient
         }
         private Update GetUpdate()
         {
-            GetUpdateRequest getRequest = new(Client) { Alias=bindedUser.Alias};
+            GetUpdateRequest getRequest = new(bindedUser.Alias);
             var key = bindedUser.CipherKey;
 
-            Task<Update> updTask=getRequest.Send<Update>(key);
-            Update upd = updTask.Result; 
+            var updTask=Client.Send(key,getRequest);
+            Update upd = updTask.Result.Content; 
             UpdateDbInfo(upd);
             return upd;
         }

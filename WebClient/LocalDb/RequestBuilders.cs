@@ -1,6 +1,6 @@
 ﻿using Common;
 using Common.Database.Chat;
-using Common.Requests;
+using Common.Requests.Post;
 using Common.Services;
 using System;
 using System.Collections.Generic;
@@ -19,21 +19,15 @@ namespace WebClient.LocalDb
         public static SignUpRequest BuildSignUp(string username)
         {
             var generator = new TokenGenerator();
-            var request = new SignUpRequest(ClientContext.WebClient)
-            {
-                Username = username,
-                Alias = generator.GenerateToken(10, 40)
-            };
+            var request = new SignUpRequest(generator) { Username = username };
             return request;
         }
         public CreateChatRequest BuildNewChatRequest(string chatName,ChatType type, IEnumerable<string> participants,RSACryptoServiceProvider rsa)
         {
            // using var rsa = new RSACryptoServiceProvider(2048);
-            CreateChatRequest request = new(ClientContext.WebClient)
+            CreateChatRequest request = new(_user.Alias)
             {
-                Alias = _user.Alias,
                 RsaLock = rsa.ExportRSAPublicKey(),
-                Method = HttpMethod.Post,
                 ChatName = chatName,
                 Type = type
             };

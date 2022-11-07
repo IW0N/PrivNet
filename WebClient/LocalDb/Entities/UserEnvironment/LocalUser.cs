@@ -1,4 +1,4 @@
-﻿using Common.Requests;
+﻿using Common.Requests.Post;
 using Common.Responses;
 using WebClient.LocalDb.Entities.UserEnvironment.Plugins;
 using static WebClient.ClientContext;
@@ -21,10 +21,13 @@ namespace WebClient.LocalDb.Entities.UserEnvironment
                 new CreateDialogPlugin(this)
             };
         }
-        
+        public static async Task Test()
+        {
+            await ClientContext.WebClient.GetAsync(Webroot + "/test/1/2");
+        }
         static T GetStaticPlugin<T>() where T : class => staticPlugins.Find<T>();
         T GetPlugin<T>() where T : class => localPlugins.Find<T>();
-        static LocalUser BuildNewUser(SignUpRequest request, SignUpResponse response)
+        internal LocalUser(SignUpRequest request, SignUpResponse response)
         {
             LocalUser user = new()
             {
@@ -34,10 +37,10 @@ namespace WebClient.LocalDb.Entities.UserEnvironment
 
             };
             user.CipherKey = new(response.CipherKey) { OwnerId = user.Nickname, Owner = user };
-            return user;
+           
         }
         public static async Task<LocalUser> SignUp(string username) => 
-            await GetStaticPlugin<SignUpPlugin>().SignUp(username, BuildNewUser);
+            await GetStaticPlugin<SignUpPlugin>().SignUp(username);
         public static LocalUser GetUser(string nickname) => 
             GetStaticPlugin<GetUserPlugin>().GetUser(nickname);
         public async Task<LocalChat> CreateDialog(string compName) => 
