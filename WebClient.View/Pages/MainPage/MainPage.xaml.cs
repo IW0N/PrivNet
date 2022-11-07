@@ -3,12 +3,14 @@ using LocalDb;
 using Microsoft.Maui.Controls;
 using System.Linq;
 using WebClient.LocalDb.Entities.UserEnvironment;
+using WebClient.View.Pages.MainPage;
+
 public partial class MainPage : ContentPage
 {
     const string userIconPath = "default_user.png";
     const string transparentColor = "#00000000";
     bool visualizeUsers = false;
-    
+    SearchMode currentMode = SearchMode.Users;
     public MainPage()
     {
         
@@ -54,9 +56,15 @@ public partial class MainPage : ContentPage
 
     private async void Entry_TextChanged(object sender, TextChangedEventArgs e)
     {
-        Entry entry = (Entry)sender;
         findingModePanel.IsVisible = true;
-        var userIds=await Client.GetUsers(entry.Text);
+        if (currentMode == SearchMode.Users)
+        {
+            var userIds = await Client.GetUsers(e.NewTextValue);
+            foreach (var id in userIds)
+            {
+
+            }
+        }
         
     }
 }

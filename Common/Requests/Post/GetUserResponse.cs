@@ -9,6 +9,8 @@ namespace Common.Requests.Post
 {
     public class GetUserResponse:BaseResponse
     {
-
+        public byte[] Avatar { get; set; }
+        public string Nickname { get; set; }
+        public long Id { get; set; }
     }
 }
