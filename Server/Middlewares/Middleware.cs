@@ -5,8 +5,8 @@
         protected RequestDelegate _next;
         public Middleware(RequestDelegate next)
         {
-            
-            _next=next;
+
+            _next = next;
         }
     }
 }

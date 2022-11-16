@@ -1,45 +1,33 @@
 ﻿using Server.Database.Base.ChatEnvironment;
+using Common;
+using Common.Database.Chat;
+using Common.Requests.Post;
+using Common.Responses;
+using Common.Services;
+using Microsoft.EntityFrameworkCore;
+using Server.Database;
+using Server.Database.Base;
+using Server.Database.Base.Aliases;
+using Server.Database.Updates;
+using Server.Services;
 namespace Server.RequestHandlers
 {
-    using Common;
-    using Common.Database.Chat;
-    using Common.Requests.Post;
-    using Common.Responses;
-    using Common.Responses.UpdateSpace;
-    using Common.Services;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Caching.Memory;
-    using Server.Database;
-    using Server.Database.Base;
-    using Server.Database.Base.Aliases;
-    using Server.Database.Updates;
-    using Services;
-    using System;
-    using System.Security.Cryptography;
+   
 
     public class ChatHandler
     {
-        public static IResult Create(HttpContext context,PrivNetDb db)
+        public static async Task Create(HttpContext context)
         {
+            using var db = context.RequestServices.GetService<PrivNetDb>();
+            var items =context.Items;
+            string aliasId = (string)items["aliasId"];
+            var request = (CreateChatRequest)items["request"];
+            var chat = await Task.Run(()=>CreateChat(request, db, aliasId));
             
-            var services = context.RequestServices;
-            var authService=services.GetRequiredService<AuthenticationService>();
-            
-            var authResult=authService.Authenticate<CreateChatRequest>(context,db);
-            if (authResult)
-            {
-                string aliasId = authResult.AliasId;
-                var request = authResult.Request;
-                var chat = CreateChat(request, db, aliasId);
-                
-                var response= BuildResponse(db, chat);
-                NotifyAboutNewChat(chat);
-                db.SaveChanges();
-                return response;
-            }
-            else
-                return Results.Unauthorized();
-            
+            NotifyAboutNewChat(chat);
+            await db.SaveChangesAsync();
+            items["response"] = new CreateChatResponse() { NextChatAlias = chat.Aliases[0].AliasId };
+
         }
         static DbChatRole GetRoleInChat(User participant, Chat chat) => 
             chat.Roles.First(role => role.UserId == participant.Id);
@@ -141,21 +129,6 @@ namespace Server.RequestHandlers
             }
         }
     
-        static List<DbChatInvite> BuildChatInvites(User initiator,Chat chat)
-        {
-            List<DbChatInvite> invites = new();
-            foreach (var participant in chat.Participants)
-            {
-                if (participant.Id != initiator.Id)
-                {
-                    var participantUpd = participant.Update;
-                    var newInvite=BuildChatInvite(initiator, participant, chat);
-                    participantUpd.ChatInvites.Add(newInvite);
-                    invites.Add(newInvite);
-                }
-            }
-            return invites;
-        }
         static Chat CreateChat(CreateChatRequest request,PrivNetDb db, string userAlias)
         {
             var chat = new Chat
@@ -176,22 +149,7 @@ namespace Server.RequestHandlers
            
             return chat;
         }
-        static IResult BuildResponse(PrivNetDb db,Chat chat)
-        {
-            User creator = chat.Participants[0];
-            creator.CipherKey.UpdateIV();
-            TokenGenerator generator = new();
-            CreateChatResponse response = new() 
-            {
-                
-                NextChatAlias = chat.Aliases[0].AliasId,
-                NextAlias=generator.GenerateToken(10,60),
-                NextIV=creator.CipherKey.IV
-            };
-            db.SaveChanges();
-            byte[] encrResponse = response.Encrypt(creator.CipherKey);
-            return Results.Bytes(encrResponse);
-        }
+        
 
 
     }

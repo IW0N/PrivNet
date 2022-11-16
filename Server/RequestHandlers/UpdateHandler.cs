@@ -31,38 +31,21 @@ namespace Server.RequestHandlers
 
             return uAlias;
         }
-        static IResult GetUpdateSynchrously(HttpContext context, PrivNetDb db)
+        public static async Task GetUpdate(HttpContext context)
         {
-
-            string aliasId = context.Request.Query["aliasId"];
-            var uAlias = GetAlias(db,aliasId);
-            User user = uAlias.Table;
-            Update upd = db.BuildUpdateFor(user);
-            byte[] encryptedInfo = upd.Encrypt(user.CipherKey);
-            return Results.Bytes(encryptedInfo);
+            User user = (User)context.Items["sender"];
+            Update upd = user.Update.ConvertToUpdate();
+            context.Items["response"] = upd;
         }
-        public static async Task<IResult> GetUpdate(HttpContext context,PrivNetDb db)=>
-            await Task.Run(() => GetUpdateSynchrously(context, db));
-        static IResult DeleteUpdateSynchrously(HttpContext context, PrivNetDb db,TokenGenerator generator)
+        
+        public static async Task DeleteUpdate(HttpContext context)
         {
-            string aliasId = context.Request.Query["aliasId"];
-            var uAlias = GetAlias(db, aliasId);
-            User user = uAlias.Table;
-            AesKey key = user.CipherKey;
+            using PrivNetDb db = context.RequestServices.GetService<PrivNetDb>();
+            var user = (User)context.Items["sender"];
             user.Update.Clean();
-          
-            byte[] newIV=key.GetNewIV();
-            BaseResponse response = new() { NextAlias = generator.GenerateToken(), NextIV=newIV };
-            
-            byte[] encrypted=response.Encrypt(key);
-            key.IV = newIV;
-            user.Alias = new UserAlias(response.NextAlias, user);
             db.SaveChanges();
-            
-            return Results.Bytes(encrypted);
+            context.Items["response"] = new BaseResponse();
         }
-        public static async Task<IResult> DeleteUpdate(HttpContext context, PrivNetDb db,TokenGenerator generator) =>
-            await Task.Run(()=>DeleteUpdateSynchrously(context,db,generator));
        
         public static async Task<IResult> TestPolling(PrivNetDb db,string alias)
         {

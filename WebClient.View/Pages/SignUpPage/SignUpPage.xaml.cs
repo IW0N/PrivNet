@@ -11,7 +11,7 @@ public partial class SignUpPage : ContentPage
 	private async void SignUp(object sender,EventArgs e)
 	{
 		string uText=username.Text;
-		await LocalUser.Test();
+		//await LocalUser.Test();
 		await LocalUser.SignUp(uText);
 		await Navigation.PopAsync();
 	}

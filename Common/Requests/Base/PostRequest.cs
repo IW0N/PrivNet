@@ -9,6 +9,8 @@ namespace Common.Requests.Base
 {
     public abstract class PostRequest<T>:BaseRequest<T> where T:BaseResponse
     {
+        public override HttpMethod Method => HttpMethod.Post;
+        public PostRequest() : base() { }
         public PostRequest(string alias) : base(alias) { }
         protected override void SetDataToRequest(byte[] encryptedInfo, HttpRequestMessage request)
         {

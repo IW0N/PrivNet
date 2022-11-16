@@ -1,7 +1,5 @@
 ﻿using Server.Database.Base;
-using Server.Database.Entities.Aliases;
-using Server.Database.Entities.ChatEnvironment;
-using System.Numerics;
+using Server.Database;
 
 namespace Server.Tests.Database.Aliases
 {

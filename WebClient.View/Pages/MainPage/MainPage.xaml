@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:WebClient.View.Pages.MainPage.Templates"
              x:Class="WebClient.View.MainPage"
              NavigationPage.HasNavigationBar="False">
     <Grid>
@@ -41,7 +42,9 @@
                 Placeholder="Enter..."
                 PlaceholderColor="DarkGray"
                 Margin="7,0"
-                TextChanged="Entry_TextChanged" />
+                TextChanged="Entry_TextChanged" 
+                x:Name="findUsersEntry"
+                />
             <!--Chat list-->
             <VerticalStackLayout  Grid.Column="1" Grid.Row="1" BackgroundColor="#e6eef5">
                 <Grid HeightRequest="46" ColumnSpacing="4" Padding="5" 
@@ -64,15 +67,36 @@
                     <Line BackgroundColor="DodgerBlue" Grid.Row="2" Grid.Column="2"/>
                 </Grid>
                 <ScrollView>
-                    <VerticalStackLayout Spacing="30" Padding="5">
-                        <Label Text="Lol" x:Name="test90"/>
-                        <Line X2="4000" Stroke="LightGray"/>
-                        <Label Text="Lol"/>
-                        <Line X2="4000" Stroke="LightGray"/>
-                        <Label Text="Lol"/>
-                        <Line X2="4000" Stroke="LightGray"/>
-                    </VerticalStackLayout>
-            </ScrollView>
+                    <Grid RowSpacing="2" Padding="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                        </Grid.RowDefinitions>
+
+                        <Button CornerRadius="0" BackgroundColor="Transparent"/>
+                        <HorizontalStackLayout Grid.Row="0" VerticalOptions="Center">
+                            <Image Source="default_user.png" HeightRequest="42" HorizontalOptions="Start"/>
+                            <VerticalStackLayout Padding="4,0">
+                                <Label Text="Name of channel" FontAttributes="Bold"/>
+                                <Label Text="Text of some message"/>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                        <Button CornerRadius="0" BackgroundColor="Transparent"/>
+                        <HorizontalStackLayout Grid.Row="1" VerticalOptions="Center">
+                            <Image Source="default_user.png" HeightRequest="42" HorizontalOptions="Start"/>
+                            <VerticalStackLayout Padding="4,0">
+                                <Label Text="Name of channel" FontAttributes="Bold"/>
+                                <Label Text="Text of some message222"/>
+                            </VerticalStackLayout>
+                          
+                        </HorizontalStackLayout>
+                        <controls:UserBox Grid.Row="2" UserId="134519" Username="Some name"/>
+
+                    </Grid>
+                    
+                </ScrollView>
             </VerticalStackLayout>
             <ScrollView Grid.Column="1" Grid.Row="1" Margin="0,-55,0,0" IsVisible="false" x:Name="menuUsersView">
                 <VerticalStackLayout BackgroundColor="#af909090"

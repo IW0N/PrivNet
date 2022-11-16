@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 namespace Common.Requests.Base;
 public abstract class GetRequest<T> : BaseRequest<T> where T : BaseResponse
 {
+    public override HttpMethod Method => HttpMethod.Get;
+    public GetRequest() : base() { }
     public GetRequest(string alias) : base(alias) { }
     protected override void SetDataToRequest(byte[] encryptedInfo, HttpRequestMessage request)
     {

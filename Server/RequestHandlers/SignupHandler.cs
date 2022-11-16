@@ -92,8 +92,14 @@ namespace Server.RequestHandlers
             byte[] encryptedResponse=response.EncryptObject(response.CipherKey);
             return Results.Bytes(encryptedResponse);
         }
-        public static async Task<IResult> SignUp(HttpContext context, PrivNetDb db, IOptions<CryptoOptions> crypto)=>
-            await Task.Run(() => SignUpSynchronously(context, db, crypto));
+        public static async Task SignUp(HttpContext context)
+        {
+            var services = context.RequestServices;
+            using var db = services.GetService<PrivNetDb>();
+            var crypto = services.GetService<IOptions<CryptoOptions>>();
+            var result= await Task.Run(() => SignUpSynchronously(context, db, crypto));
+            await result.ExecuteAsync(context);
+        }
         
         
     }

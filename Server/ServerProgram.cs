@@ -7,11 +7,19 @@ using Microsoft.AspNetCore.Routing.Patterns;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configure();
 var app = builder.Build();
-app.UseAliasChecker();
-app.MapPost("/api/user",SignupHandler.SignUp);
-app.MapGet("/api/user",);
-app.MapPost("/api/user/chat",ChatHandler.Create);
-app.MapGet("/api/user/update",UpdateHandler.GetUpdate);
-app.MapDelete("/api/user/update",UpdateHandler.DeleteUpdate);
-app.MapGet("/api/users",UserHandler.FindUsers);
+app.MapPost("/api/user", SignupHandler.SignUp);
+app.MapWhen(c => c.Request.Path != "/api/user", builder =>
+{
+    builder.UseAliasChecker();
+    builder.UseUserExtractor();
+    builder.UseRequestDecryptor();
+
+    //builder.UseMapGet("/api/user",);
+    builder.UseMapPost("/api/user/chat", ChatHandler.Create);
+    builder.UseMapGet("/api/user/update", UpdateHandler.GetUpdate);
+    builder.UseMapDelete("/api/user/update", UpdateHandler.DeleteUpdate);
+    builder.UseMapGet("/api/users", UserHandler.FindUsers);
+    builder.UseTemporaryUpdater();
+    builder.RunEncryption();
+});
 app.Run();

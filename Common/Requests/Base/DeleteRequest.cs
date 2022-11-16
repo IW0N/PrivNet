@@ -9,6 +9,8 @@ namespace Common.Requests.Base
 {
     public abstract class DeleteRequest<T>:BaseRequest<T> where T:BaseResponse
     {
+        public override HttpMethod Method => HttpMethod.Delete;
+        public DeleteRequest() : base() { }
         public DeleteRequest(string alias) : base(alias) { }
         protected override void SetDataToRequest(byte[] encryptedInfo, HttpRequestMessage request)
         {

@@ -10,6 +10,7 @@ namespace Common.Requests.Delete
 {
     public class DeleteUpdateRequest : DeleteRequest<DeleteUpdateResponse>
     {
+       
         public DeleteUpdateRequest(string alias) : base(alias) { }
         public override string RequestUrl => "/api/user/update";
 

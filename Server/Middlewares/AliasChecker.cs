@@ -4,17 +4,16 @@ using Server.Database.Base.Aliases;
 
 namespace Server.Middlewares
 {
-    public class AliasChecker
+    public class AliasChecker:Middleware
     {
-        private readonly RequestDelegate next;
         static readonly Dictionary<string,string> exceptionPathes = new() 
         {
-            {"/api/user","POST" },
+            {"/api/user","POST" }
            
         };
-        public AliasChecker(RequestDelegate next)
+        public AliasChecker(RequestDelegate next):base(next)
         {
-            this.next = next;
+          
         }
         string CompressAliasId(string aliasId)
         {
@@ -32,7 +31,10 @@ namespace Server.Middlewares
                 await ResponseByError(context, error, 404);
             }
             else
-                await next(context);
+            {
+                context.Items.Add("aliasId",aliasId);
+                await _next(context);
+            }
             
             
         }
@@ -63,7 +65,7 @@ namespace Server.Middlewares
             bool isExceptionPath = exceptionPathes.ContainsKey(path) && exceptionPathes[path]==request.Method;
             
             if (isExceptionPath)
-                await next(requestContext);
+                await _next(requestContext);
             else
                 await CheckAlias(request, db);
         }

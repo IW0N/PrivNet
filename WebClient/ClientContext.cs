@@ -11,7 +11,7 @@ namespace WebClient
         public string Webroot { get; init; }
         public string EnvironmentPlace { get; init; }
     }
-    internal static class ClientContext
+    public static class ClientContext
     {
         private static ExternalConfigs Configs { get; }
         public static string EnvironmentPlace { get=>Configs.EnvironmentPlace; }

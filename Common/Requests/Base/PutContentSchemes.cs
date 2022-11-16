@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Common.Requests.Base
 {
@@ -11,9 +12,10 @@ namespace Common.Requests.Base
     {
         public static void PutAsGetRequest(byte[] encryptedInfo, HttpRequestMessage request)
         {
-            string baseUri = request.RequestUri.AbsolutePath;
-
-            baseUri += $"&params={encryptedInfo.ToBase64()}";
+            string baseUri = request.RequestUri.ToString();
+            string encr64 = encryptedInfo.ToBase64();
+            baseUri += $"&params={HttpUtility.UrlEncode(encr64)}";
+           
             request.RequestUri = new Uri(baseUri);
         }
         public static void PutAsPostRequst(byte[] encrypted,HttpRequestMessage request)

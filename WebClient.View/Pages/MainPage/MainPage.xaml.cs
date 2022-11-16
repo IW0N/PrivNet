@@ -11,9 +11,13 @@ public partial class MainPage : ContentPage
     const string transparentColor = "#00000000";
     bool visualizeUsers = false;
     SearchMode currentMode = SearchMode.Users;
+    ActionDelayer findUsersDelayer;
     public MainPage()
     {
-        
+        var users=LocalUser.GetLocalUsers();
+        string first=users.ElementAt(0);
+        ClientContext.ActiveUser=LocalUser.GetUser(first);
+        findUsersDelayer = new(1000, GetUsers);
         InitializeComponent();
     }
     private IEnumerable<string> GetIncludedUsers() =>
@@ -54,17 +58,12 @@ public partial class MainPage : ContentPage
         Navigation.PushAsync(new Pages.SignUpPage());
     }
 
-    private async void Entry_TextChanged(object sender, TextChangedEventArgs e)
+    private void Entry_TextChanged(object sender, TextChangedEventArgs e)
     {
-        findingModePanel.IsVisible = true;
-        if (currentMode == SearchMode.Users)
-        {
-            var userIds = await Client.GetUsers(e.NewTextValue);
-            foreach (var id in userIds)
-            {
-
-            }
-        }
-        
+            
+    }
+    void GetUsers()
+    {
+            
     }
 }

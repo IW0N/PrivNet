@@ -1,13 +1,12 @@
-﻿using Common.Responses;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Requests.Post
+namespace Common.Responses
 {
-    public class GetUserResponse:BaseResponse
+    public class GetUserResponse : BaseResponse
     {
         public byte[] Avatar { get; set; }
         public string Nickname { get; set; }

@@ -21,22 +21,18 @@ namespace WebClient.LocalDb.Entities.UserEnvironment
                 new CreateDialogPlugin(this)
             };
         }
-        public static async Task Test()
-        {
-            await ClientContext.WebClient.GetAsync(Webroot + "/test/1/2");
-        }
+       
         static T GetStaticPlugin<T>() where T : class => staticPlugins.Find<T>();
         T GetPlugin<T>() where T : class => localPlugins.Find<T>();
         internal LocalUser(SignUpRequest request, SignUpResponse response)
         {
-            LocalUser user = new()
-            {
-                Alias = response.NextAlias,
-                
-                Nickname = request.Username,
 
-            };
-            user.CipherKey = new(response.CipherKey) { OwnerId = user.Nickname, Owner = user };
+            Alias = response.NextAlias;
+                
+           Nickname = request.Username;
+
+            
+            CipherKey = new(response.CipherKey) { OwnerId = Nickname, Owner = this };
            
         }
         public static async Task<LocalUser> SignUp(string username) => 

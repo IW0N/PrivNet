@@ -1,19 +1,22 @@
 ﻿using Common.Responses;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
 namespace Common.Requests.Base;
 public abstract class BaseRequest<TResponse> : WebCipher, IRequest<TResponse> where TResponse : BaseResponse
 {
+    public abstract HttpMethod Method { get; }
     public abstract string RequestUrl { get; }
     public string Alias { get; }
     public BaseRequest(string alias) => Alias = alias;
+    [JsonConstructor]
+    public BaseRequest() { }
     protected abstract void SetDataToRequest(byte[] encryptedInfo, HttpRequestMessage request);
-    string BuildFullUrl() => IRequest.WebRoot + RequestUrl + $"?aliasId={Alias}";
+    string BuildFullUrl() => IRequest.WebRoot + RequestUrl + $"?aliasId={HttpUtility.UrlEncode(Alias)}";
     HttpRequestMessage GetHttpRequest(AesKey key, string fullRequestUrl)
     {
         byte[]? encrypted = Encrypt(key);
@@ -33,10 +36,13 @@ public abstract class BaseRequest<TResponse> : WebCipher, IRequest<TResponse> wh
     protected async Task ThrowIfWebError(HttpResponseMessage response)
     {
         int statusCode = (int)response.StatusCode;
-        var readStringTask = response.Content.ReadAsStringAsync();
-        var description =await readStringTask;
         if ((int)response.StatusCode >= 400)
+        {
+            var readStringTask = response.Content.ReadAsStringAsync();
+            var description = await readStringTask;
+
             throw new WebException($"Web error! Code:{statusCode} Description: {description}");
+        }
     }
     public async Task<TResponse> Send(AesKey key, HttpClient client)
     {

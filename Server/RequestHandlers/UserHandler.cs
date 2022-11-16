@@ -1,43 +1,41 @@
 ﻿using Common;
 using Common.Extensions;
-using Common.Requests;
 using Common.Requests.Get;
 using Common.Responses;
-using Common.Services;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Server.Database;
 using Server.Database.Base;
 using Server.Services.Static;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Server.RequestHandlers
 {
     public class UserHandler
     {
-        public static async Task<IResult> FindUser(HttpContext context)
+        /*public static async Task<IResult> FindUser(HttpContext context)
         {
+           
+        }*/
+        public static async Task FindUsers(HttpContext context)
+        {
+            var db = context.RequestServices.GetService<PrivNetDb>();
+            var request = (FindUsersRequest)context.Items["request"];
 
-        }
-        public static async Task<IResult> FindUsers(HttpContext context,PrivNetDb db)
-        {
-            var query = context.Request.Query;
-            string words64=query["params"];
-            byte[] encrKeyWords = words64.FromBase64();
-            string alias = query["aliasId"];
-            User sender=await db.Users.
-                Include(user => user.CipherKey).
-                FirstAsync(user=>user.AliasId==alias);
-            var key=sender.CipherKey;
-            var req=WebCipher.Decrypt<FindUsersRequest>(encrKeyWords,key);
-            var list=db.Users.
-                Where(user => UsernameContainsKeyWords(user, req.KeyWords)).
-                Select(user=>user.Id).
-                AsEnumerable();
+            var list = SelectUsersByKeyWords(db.Users,request.KeyWords);
  
             FindedUsersResponse resp = new() { FindedUserIds = list};
-            await UpdateDbHandler.SetTemporaryData(resp, sender, db);
-            return await ResponseSender.Send(resp, sender);
+            context.Items["response"] = resp;
+        }
+        static List<long> SelectUsersByKeyWords(IEnumerable<User> users, string[] keyWords)
+        {
+            List<long> ids = new();
+            foreach (var user in users)
+            {
+                bool contains=UsernameContainsKeyWords(user, keyWords);
+                if (contains)
+                    ids.Add(user.Id);
+                
+            }
+            return ids;
         }
         static bool UsernameContainsKeyWords(User user, string[] keyWords)
         {

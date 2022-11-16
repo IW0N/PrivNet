@@ -1,18 +1,26 @@
 ﻿using Common.Extensions;
-using Common.Requests;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Common
 {
     public abstract class WebCipher
     {
-        
+        public static object Decrypt(Type cipherType,byte[] encrypted, AesKey key)
+        {
+            var selfType = typeof(WebCipher);
+            if (cipherType.IsSubclassOf(selfType))
+            {   
+                using Aes aes = Aes.Create();
+                aes.ImportKey(key);
+                byte[] bts = aes.DecryptEcb(encrypted, PaddingMode.PKCS7);
+                string json = Encoding.ASCII.GetString(bts);
+                return JsonConvert.DeserializeObject(json, cipherType);
+            }
+            else
+                throw new ArgumentException($"{cipherType} is not based on ${nameof(WebCipher)}!");
+        }
         public static T? Decrypt<T>(byte[] encrypted, AesKey key) where T : WebCipher
         {
             using Aes aes = Aes.Create();

@@ -11,6 +11,7 @@ namespace Common.Requests.Get
 {
     public class GetUpdateRequest : GetRequest<GetResponse<Update>>
     {
+        
         public GetUpdateRequest(string alias) : base(alias) { }
         public override string RequestUrl => "/api/user/update";
     }

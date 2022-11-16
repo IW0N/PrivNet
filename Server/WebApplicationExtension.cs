@@ -4,6 +4,7 @@ using Server.Database;
 using Server.Services;
 using Common;
 using Common.Responses;
+using Common.Requests.Base;
 
 namespace Server
 {
@@ -21,6 +22,7 @@ namespace Server
             services.AddSingleton<AuthenticationService>();
             services.AddSingleton<TokenGenerator>();
             services.Configure<CryptoOptions>(builder.Configuration);
+            services.AddMemoryCache();
         }
     }
 }

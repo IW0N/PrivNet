@@ -26,6 +26,11 @@ namespace Common.Requests.Post
         {
             Key = AesKey.GenerateRandom();
         }
+        public SignUpRequest() : base() { }
+        public SignUpRequest(string alias) : base(alias)
+        {
+            
+        }
         static byte[] EncryptAes(byte[] publicKey, AesKey key)
         {
             using var rsa = new RSACryptoServiceProvider();
@@ -35,19 +40,12 @@ namespace Common.Requests.Post
             return rsa.Encrypt(aesBytes, false);
         }
 
-        async Task<byte[]> Concat(byte[] encryptedKey, byte[] otherPart)
-        {
-            using var mem = new MemoryStream();
-            await mem.WriteAsync(encryptedKey);
-            await mem.WriteAsync(otherPart);
-            return mem.GetBuffer();
-        }
         async Task<byte[]> Encrypt()
         {
             byte[] publicKey = File.ReadAllBytes("certificate.purk");
             byte[] encryptedKey = EncryptAes(publicKey, Key);
             byte[] otherPart = this.EncryptObject(Key);
-            return await Concat(encryptedKey, otherPart);
+            return encryptedKey.Concat(otherPart).ToArray();
         }
         public async Task<SignUpResponse> Send(HttpClient client)
         {
@@ -76,8 +74,10 @@ namespace Common.Requests.Post
         static byte[] GetOtherEncryptedPart(byte[] encrypted, int keyByteSize)
         {
             byte[] buffer = new byte[encrypted.Length - keyByteSize];
-            using (var mem = new MemoryStream(encrypted))
-                mem.Read(buffer, keyByteSize, buffer.Length);
+            for (int i=0;i<buffer.Length;i++)
+            {
+                buffer[i] = encrypted[i+keyByteSize];
+            }
             return buffer;
         }
         static byte[] GetAesKeyBytes(byte[] encrypted, int keySize, out int keyByteSize)
