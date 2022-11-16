@@ -67,7 +67,7 @@
                     <Line BackgroundColor="DodgerBlue" Grid.Row="2" Grid.Column="2"/>
                 </Grid>
                 <ScrollView>
-                    <Grid RowSpacing="2" Padding="3">
+                    <Grid RowSpacing="2" Padding="3" x:Name="interactiveGrid">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="50"/>
                             <RowDefinition Height="50"/>
