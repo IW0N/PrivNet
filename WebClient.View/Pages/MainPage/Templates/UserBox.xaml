@@ -6,7 +6,7 @@
 
 
     <AbsoluteLayout BindingContext="{x:Reference this}">
-        <Button x:Name="btn" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="SizeProportional"/>
+        <Button x:Name="button" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="SizeProportional"/>
         <HorizontalStackLayout Grid.Row="2">
             <Image Source="{Binding AvatarSource}" HeightRequest="37" HorizontalOptions="Start"/>
             <VerticalStackLayout Padding="2">

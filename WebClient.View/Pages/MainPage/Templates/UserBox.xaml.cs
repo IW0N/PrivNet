@@ -7,7 +7,7 @@ public partial class UserBox : ContentView
 	public readonly static BindableProperty UsernameProperty = GetProp<string>(nameof(Username));
 	public readonly static BindableProperty AvatarSourceProperty = GetProp<string>(nameof(AvatarSource),"default_user.png");
 	public readonly static BindableProperty UserIdProperty = GetProp<long>(nameof(UserId));
-	public event EventHandler Clicked { add => btn.Clicked += value; remove => btn.Clicked -= value; }
+	public event EventHandler Clicked { add => button.Clicked += value; remove => button.Clicked -= value; }
 	public string Username
 	{ 
 		get => (string)GetValue(UsernameProperty);
