@@ -28,6 +28,6 @@ namespace Server.Middlewares.Extensions
         public static void UseMapDelete(this IApplicationBuilder builder, string path, RequestDelegate handler)=>
             builder.UseMap(path,"DELETE",handler);
         
-
+       
     }
 }

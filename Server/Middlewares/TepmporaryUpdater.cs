@@ -46,6 +46,7 @@ namespace Server.Middlewares
             items.Add("key", sender.CipherKey);
             string newAliasId = generator.GenerateToken();
             cache.Remove(sender.AliasId);
+            //db.UserAliases.Remove(sender.Alias);
             UpdateUserTemporaryInfo(sender, newAliasId);
             cache.Set(newAliasId, sender);
             UpdateResponseTemporaryInfo(response, sender);

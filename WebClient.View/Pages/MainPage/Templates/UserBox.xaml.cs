@@ -39,5 +39,5 @@ public partial class UserBox : ContentView
 			defaultValue:defaultValue
         );
     }
-	
+ 
 }

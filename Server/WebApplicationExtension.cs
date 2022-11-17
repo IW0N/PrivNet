@@ -5,6 +5,7 @@ using Server.Services;
 using Common;
 using Common.Responses;
 using Common.Requests.Base;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Server
 {
@@ -14,14 +15,14 @@ namespace Server
         public static void Configure(this WebApplicationBuilder builder)
         {
             var configs = builder.Configuration;
+            configs.AddJsonFile("NoRequiredRegisterPaths.json");
             string connectionStr = configs.GetConnectionString("privNetDb");
             IServiceCollection services = builder.Services;
+            var config = builder.Configuration;
             services.AddDbContext<PrivNetDb>(options => options.UseSqlServer(connectionStr));
-            //needs for post-processing response and setting up NextIv and NextAlias in 
-            services.AddSingleton<BaseResponse>();
-            services.AddSingleton<AuthenticationService>();
             services.AddSingleton<TokenGenerator>();
-            services.Configure<CryptoOptions>(builder.Configuration);
+            services.Configure<CryptoOptions>(config);
+            services.Configure<NoRequiredRegisterPaths>(config);
             services.AddMemoryCache();
         }
     }

@@ -1,9 +1,12 @@
 namespace WebClient.View;
+
+using Common.Requests.Get;
 using LocalDb;
 using Microsoft.Maui.Controls;
 using System.Linq;
 using WebClient.LocalDb.Entities.UserEnvironment;
 using WebClient.View.Pages.MainPage;
+using WebClient.View.Pages.MainPage.Templates;
 
 public partial class MainPage : ContentPage
 {
@@ -60,10 +63,13 @@ public partial class MainPage : ContentPage
 
     private void Entry_TextChanged(object sender, TextChangedEventArgs e)
     {
-            
+        findUsersDelayer.Reboot();
     }
-    void GetUsers()
+    async void GetUsers()
     {
-            
+        var usersIds = await Client.GetUsersIds(findUsersEntry.Text);
+        var users = await Client.GetUsers(usersIds);
+        
+       
     }
 }

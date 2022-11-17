@@ -1,20 +1,31 @@
-﻿using Common;
-using Common.Extensions;
-using Common.Requests.Get;
+﻿using Common.Requests.Get;
 using Common.Responses;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Server.Database;
 using Server.Database.Base;
-using Server.Services.Static;
+using Server.RequestHandlers.Extensions;
 
 namespace Server.RequestHandlers
 {
     public class UserHandler
     {
-        /*public static async Task<IResult> FindUser(HttpContext context)
+        public static async Task FindUser(HttpContext context)
         {
-           
-        }*/
+            var items = context.Items;
+            var services=context.RequestServices;
+            IMemoryCache cache = services.GetService<IMemoryCache>();
+            GetUserRequest request = (GetUserRequest)items["request"];
+            bool cacheContains=cache.TryGetValue(request.Id,out User searchableUser);
+            if (!cacheContains)
+            {
+                var db = services.GetService<PrivNetDb>();
+                searchableUser=await db.Users.FindAsync(request.Id);
+                cache.Set(request.Id, searchableUser);
+            }
+            GetUserResponse response =GetUserExtension.BuildByUser(searchableUser);
+            items["response"] = response;
+        }
+
         public static async Task FindUsers(HttpContext context)
         {
             var db = context.RequestServices.GetService<PrivNetDb>();

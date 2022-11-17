@@ -55,6 +55,7 @@ namespace Server.Middlewares.RequestDecryptorSpace
                 string path = context.Request.Path;
                 var requestType = decryptorMap[(path,method)];
                 var request=WebCipher.Decrypt(requestType,data,sender.CipherKey);
+                
                 context.Items.Add("request",request);
                 await _next(context);
             }
