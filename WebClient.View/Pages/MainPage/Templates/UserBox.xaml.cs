@@ -1,7 +1,6 @@
 using Common.Responses;
-
 namespace WebClient.View.Pages.MainPage.Templates;
-
+using static TemplateContext<UserBox>;
 public partial class UserBox : ContentView
 {
 	public readonly static BindableProperty UsernameProperty = GetProp<string>(nameof(Username));
@@ -28,16 +27,18 @@ public partial class UserBox : ContentView
 	{
 		InitializeComponent();
 	}
-	static BindableProperty GetProp<T>(string propertyName,T defaultValue=default)
-	{
-		
-		return BindableProperty.Create
-        (
-            propertyName: propertyName,
-            returnType: typeof(T),
-            declaringType: typeof(UserBox),
-			defaultValue:defaultValue
-        );
+    public static void BuildBoxesByResponses(IEnumerable<GetUserResponse> users, VerticalStackLayout interactiveStack)
+    {
+		interactiveStack.Clear();
+        foreach (var user in users)
+        {
+           
+            var userBox = new UserBox
+            {
+                UserId = user.Id,
+                Username = user.Nickname, 
+            };
+            interactiveStack.Add(userBox);
+        }
     }
- 
 }

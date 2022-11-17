@@ -5,14 +5,18 @@
              x:Name="this">
 
 
-    <AbsoluteLayout BindingContext="{x:Reference this}">
-        <Button x:Name="button" BackgroundColor="Transparent" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="SizeProportional"/>
+    <AbsoluteLayout BindingContext="{x:Reference this}" HeightRequest="50">
+        <Button x:Name="button" 
+                BackgroundColor="Transparent"
+                AbsoluteLayout.LayoutBounds="0,0,1,1" 
+                AbsoluteLayout.LayoutFlags="SizeProportional"/>
         <HorizontalStackLayout Grid.Row="2">
             <Image Source="{Binding AvatarSource}" HeightRequest="37" HorizontalOptions="Start"/>
             <VerticalStackLayout Padding="2">
                 <Label Text="{Binding Username}" VerticalOptions="Center" FontSize="15" FontAttributes="Bold"/>
                 <HorizontalStackLayout>
-                    <Label Text="id: "/>
+                    <Label Text="id:"/>
+                    <Label Text=" "/>
                     <Label Text="{Binding UserId}"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>

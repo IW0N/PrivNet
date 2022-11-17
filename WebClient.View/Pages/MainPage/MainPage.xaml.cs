@@ -15,6 +15,7 @@ public partial class MainPage : ContentPage
     bool visualizeUsers = false;
     SearchMode currentMode = SearchMode.Users;
     ActionDelayer findUsersDelayer;
+    long chosenUser;
     public MainPage()
     {
         var users=LocalUser.GetLocalUsers();
@@ -69,7 +70,6 @@ public partial class MainPage : ContentPage
     {
         var usersIds = await Client.GetUsersIds(findUsersEntry.Text);
         var users = await Client.GetUsers(usersIds);
-        
-       
+        UserBox.BuildBoxesByResponses(users,interactiveStack);
     }
 }

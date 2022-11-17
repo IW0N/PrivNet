@@ -46,64 +46,19 @@
                 x:Name="findUsersEntry"
                 />
             <!--Chat list-->
-            <VerticalStackLayout  Grid.Column="1" Grid.Row="1" BackgroundColor="#e6eef5">
-                <Grid HeightRequest="46" ColumnSpacing="4" Padding="5" 
-                      IsVisible="false" x:Name="findingModePanel">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition Height="2"/>
-                    </Grid.RowDefinitions>
-                    <Button Grid.Column="0" Text="Chats" BorderWidth="1.8"
-                            BackgroundColor="Transparent" TextColor="Black" VerticalOptions="Start"/>
-                    <Button Grid.Column="1" Text="Users" BorderWidth="1.8" BackgroundColor="Transparent" TextColor="Black"/>
-                    <Button Grid.Column="2" Text="Channels" BorderWidth="1.8" BackgroundColor="Transparent" TextColor="Black"/>
-                    <Line BackgroundColor="DodgerBlue" Grid.Row="2"/>
-                    <Line BackgroundColor="DodgerBlue" Grid.Row="2" Grid.Column="1"/>
-                    <Line BackgroundColor="DodgerBlue" Grid.Row="2" Grid.Column="2"/>
-                </Grid>
-                <ScrollView>
-                    <Grid RowSpacing="2" Padding="3" x:Name="interactiveGrid">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                        </Grid.RowDefinitions>
-
-                        <Button CornerRadius="0" BackgroundColor="Transparent"/>
-                        <HorizontalStackLayout Grid.Row="0" VerticalOptions="Center">
-                            <Image Source="default_user.png" HeightRequest="42" HorizontalOptions="Start"/>
-                            <VerticalStackLayout Padding="4,0">
-                                <Label Text="Name of channel" FontAttributes="Bold"/>
-                                <Label Text="Text of some message"/>
-                            </VerticalStackLayout>
-                        </HorizontalStackLayout>
-                        <Button CornerRadius="0" BackgroundColor="Transparent"/>
-                        <HorizontalStackLayout Grid.Row="1" VerticalOptions="Center">
-                            <Image Source="default_user.png" HeightRequest="42" HorizontalOptions="Start"/>
-                            <VerticalStackLayout Padding="4,0">
-                                <Label Text="Name of channel" FontAttributes="Bold"/>
-                                <Label Text="Text of some message222"/>
-                            </VerticalStackLayout>
-                          
-                        </HorizontalStackLayout>
-                        <controls:UserBox Grid.Row="2" UserId="134519" Username="Some name"/>
-
-                    </Grid>
-                    
-                </ScrollView>
-            </VerticalStackLayout>
-            <ScrollView Grid.Column="1" Grid.Row="1" Margin="0,-55,0,0" IsVisible="false" x:Name="menuUsersView">
+            <!--BackgroundColor="#e6eef5"-->
+            <ScrollView Grid.Column="1" Grid.Row="1" Margin="0,-55,0,0" IsVisible="false" x:Name="menuUsersView" >
                 <VerticalStackLayout BackgroundColor="#af909090"
-                    HorizontalOptions="Start" 
+                    HorizontalOptions="Start"
                     x:Name="localUsers" 
                      Padding="3" Spacing="3">
                     <ImageButton Source="add_user_btn.png" WidthRequest="50" BackgroundColor="Transparent" Clicked="ImageButton_Clicked" x:Name="SignUp"/>
+                </VerticalStackLayout>
+            </ScrollView>
+            <ScrollView Grid.Row="1" Grid.Column="1" BackgroundColor="#e6eef5">
+                <VerticalStackLayout Padding="3" Spacing="3" x:Name="interactiveStack">
+                    
+                    
                 </VerticalStackLayout>
             </ScrollView>
             <BoxView Color="#e6dee5"/>
@@ -115,6 +70,8 @@
                 BackgroundColor="#00000000" Clicked="OnAvatarClicked"/>
         </Grid>
 
-        <BoxView Color="Red" Grid.Column="1" Grid.Row="0"/>
+        <BoxView Color="LightCoral" Grid.Column="1" Grid.Row="0"/>
+       
+        
     </Grid>
 </ContentPage>
