@@ -1,0 +1,7 @@
+{
+  "Paths": {
+    
+      "/api/user": [ "POST" ],
+      "/api/testRequest": ["PUT","DELETE"]
+  }
+}
